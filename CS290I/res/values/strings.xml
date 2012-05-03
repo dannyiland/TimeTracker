@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="hello">Hello World, CS290IActivity!</string>
+    <string name="app_name">CS290I</string>
+
+</resources>
