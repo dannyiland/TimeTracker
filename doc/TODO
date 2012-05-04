@@ -1,0 +1,6 @@
+TODO:
+Creating new Detectors: We need a way for a detector to create config UI for the client. A Detector's configuration is an array of Strings (easy to serialize).
+Adding new Detectors: The service needs to persist the detectors (and their configurations) added to it, so that it can restore them when it restarts.
+We'll also need to persist LocationInstance objects and their events.
+Write real Detectors
+Real UI
