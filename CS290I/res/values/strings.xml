@@ -3,5 +3,8 @@
 
     <string name="hello">Hello World, CS290IActivity!</string>
     <string name="app_name">CS290I</string>
+    <string name="blue">blue</string>
+    <string name="add_colordetector">Add ColorDetector</string>
+    <string name="get_last_10_minutes">Get Last 10 Minutes</string>
 
 </resources>
