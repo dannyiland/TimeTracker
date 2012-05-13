@@ -30,7 +30,12 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:text="@string/get_last_10_minutes" />
-
+    <Button
+        android:id="@+id/get_locations"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/get_last_10_minutes_location" />
+    
     <TextView
         android:id="@+id/list"
         android:layout_width="fill_parent"
