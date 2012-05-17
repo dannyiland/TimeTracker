@@ -4,7 +4,7 @@
 	<classpathentry kind="src" path="gen"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
-	<classpathentry kind="lib" path="lib/guava-11.0.2.jar"/>
-	<classpathentry kind="lib" path="lib/alohar_service.jar"/>
+	<classpathentry kind="lib" path="libs/alohar_service.jar"/>
+	<classpathentry kind="lib" path="libs/guava-11.0.2.jar"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>
