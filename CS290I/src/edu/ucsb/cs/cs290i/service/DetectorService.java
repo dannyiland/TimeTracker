@@ -1,6 +1,5 @@
 package edu.ucsb.cs.cs290i.service;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -12,6 +11,7 @@ import android.os.Binder;
 import android.os.IBinder;
 import edu.ucsb.cs.cs290i.service.detectors.Detector;
 import edu.ucsb.cs.cs290i.service.detectors.Event;
+import edu.ucsb.cs.cs290i.service.detectors.calendar.CalendarDataSource;
 
 public class DetectorService extends Service {
 
@@ -32,6 +32,8 @@ public class DetectorService extends Service {
 
     @Override
     public void onCreate() {
+        new CalendarDataSource(this);
+
         // TODO Auto-generated method stub
         super.onCreate();
     }

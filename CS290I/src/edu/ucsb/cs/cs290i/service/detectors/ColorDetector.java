@@ -6,7 +6,7 @@ import java.util.Random;
 
 public class ColorDetector extends Detector {
     private String color;
-
+    
 
     public ColorDetector(String... params) {
         super(params);

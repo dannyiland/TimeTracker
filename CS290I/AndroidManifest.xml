@@ -14,6 +14,10 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCOUNT_MANAGER"/>
+    <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS"/>
+    <uses-permission android:name="android.permission.GET_ACCOUNTS"/>
+    <uses-permission android:name="android.permission.USE_CREDENTIALS"/>
 
     <application
         android:icon="@drawable/ic_launcher"
@@ -50,5 +54,6 @@
                 </action>
             </intent-filter>
         </receiver>
+        <activity android:label="Google Calendar Login" android:name=".service.detectors.calendar.AccountChooser"></activity>
     </application>
 </manifest>
