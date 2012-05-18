@@ -1,6 +1,6 @@
 package edu.ucsb.cs.cs290i;
 
-class Location {
+public class Location {
 
 	private int latitude;
 	private int longitude;
