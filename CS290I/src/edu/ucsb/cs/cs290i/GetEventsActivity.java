@@ -17,7 +17,6 @@ import android.os.IBinder;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
 
 import com.alohar.core.Alohar;
@@ -26,10 +25,9 @@ import com.alohar.user.content.data.ALEvents;
 import com.alohar.user.content.data.PlaceProfile;
 import com.alohar.user.content.data.UserStay;
 
+import edu.ucsb.cs.cs290i.service.Action;
 import edu.ucsb.cs.cs290i.service.DetectorService;
 import edu.ucsb.cs.cs290i.service.DetectorService.DetectorServiceBinder;
-import edu.ucsb.cs.cs290i.service.detectors.ColorDetector;
-import edu.ucsb.cs.cs290i.service.detectors.Event;
 
 public class GetEventsActivity extends Activity {
     protected static final long TEN_MINUTES = 1000 * 60 * 10;
@@ -75,9 +73,6 @@ public class GetEventsActivity extends Activity {
         public void onServiceConnected(ComponentName c, IBinder iBinder) {
             DetectorServiceBinder binder = (DetectorServiceBinder) iBinder;
             service = binder.getService();
-
-            // Register a detector.
-            service.registerDetector(ColorDetector.class, "green");
         }
 
 
@@ -93,32 +88,28 @@ public class GetEventsActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         startLocationTracking();
-        final EditText color = (EditText) findViewById(R.id.color);
-        final Button addDetector = (Button) findViewById(R.id.add);
-        final Button getEvents = (Button) findViewById(R.id.get_events);
+        final Button showActionsList = (Button) findViewById(R.id.add);
+        final Button matchActions = (Button) findViewById(R.id.get_events);
         final Button getLocations = (Button) findViewById(R.id.get_locations);
         final TextView list = (TextView) findViewById(R.id.list);
 
-        addDetector.setOnClickListener(new OnClickListener() {
+        showActionsList.setOnClickListener(new OnClickListener() {
 
             @Override
             public void onClick(View v) {
-                service.registerDetector(ColorDetector.class, color.getText().toString());
+                startActivity(new Intent(GetEventsActivity.this, ActionsListActivity.class));
             }
         });
 
-        getEvents.setOnClickListener(new OnClickListener() {
-            StringBuilder text = new StringBuilder();
-
+        matchActions.setOnClickListener(new OnClickListener() {
 
             public void onClick(View v) {
+                StringBuilder text = new StringBuilder();
 
-                List<Event> events = service.getEvents(System.currentTimeMillis() - TEN_MINUTES,
+                List<Action> actions = service.matchActions(System.currentTimeMillis() - TEN_MINUTES,
                         System.currentTimeMillis());
-                for (Event e : events) {
-                    text.append(e.getName());
-                    text.append(": ");
-                    text.append(e.getDescription());
+                for (Action a : actions) {
+                    text.append(a.getName());
                     text.append("\n");
                 }
                 list.setText(text);
@@ -126,10 +117,10 @@ public class GetEventsActivity extends Activity {
         });
 
         getLocations.setOnClickListener(new OnClickListener() {
-            StringBuilder text = new StringBuilder();
-
 
             public void onClick(View v) {
+                StringBuilder text = new StringBuilder();
+
                 text.append("Locations in last 10 minutes:\n");
                 ArrayList<LocationInstance> locations = getLocations(System.currentTimeMillis() - TEN_MINUTES,
                         System.currentTimeMillis());
@@ -139,7 +130,7 @@ public class GetEventsActivity extends Activity {
                 list.setText(text);
             }
         });
-   
+
         Intent serviceIntent = new Intent(this, DetectorService.class);
         startService(serviceIntent);
         bindService(serviceIntent, connection, Context.BIND_AUTO_CREATE);
