@@ -19,7 +19,7 @@ public class CreateActionActivity extends Activity {
 
     protected DetectorService service;
     protected Action action;
-    
+    	
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
