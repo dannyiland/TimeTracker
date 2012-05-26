@@ -8,13 +8,17 @@
         android:id="@+id/add_cal_detector"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content" 
-        android:text="Create Action with 1 CalendarDetector"/>
-
-    <TextView
-        android:id="@+id/detectors"
+        android:text="Add Calendar Detector"/>
+    <Button
+        android:id="@+id/add_other_detector"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="TODO"
-        android:textAppearance="@android:style/TextAppearance.Large" />
-
+        android:layout_height="wrap_content" 
+        android:text="Add Other Detector"/>
+    <Button
+        android:id="@+id/finish"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" 
+        android:text="Finish"/>
+    
+    
 </LinearLayout>

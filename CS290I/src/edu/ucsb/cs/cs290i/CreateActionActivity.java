@@ -18,8 +18,8 @@ import edu.ucsb.cs.cs290i.service.detectors.calendar.CalendarDetector;
 public class CreateActionActivity extends Activity {
 
     protected DetectorService service;
-
-
+    protected Action action;
+    	
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -27,7 +27,10 @@ public class CreateActionActivity extends Activity {
         setContentView(R.layout.create_action);
 
         Button add = (Button) findViewById(R.id.add_cal_detector);
+        Button finish = (Button) findViewById(R.id.finish);
 
+        action = new Action();
+        
         add.setOnClickListener(new OnClickListener() {
 
             @Override
@@ -35,6 +38,18 @@ public class CreateActionActivity extends Activity {
                 // onActivityResult will be called with the parameters set in
                 // CalendarDetector.Config.
                 startActivityForResult(new Intent(CreateActionActivity.this, CalendarDetector.Config.class), 0);
+            }
+        });
+        
+        finish.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+
+            	service.registerAction(action);
+                // Close activity and return to actions list.
+                finish();
+
             }
         });
 
@@ -53,15 +68,8 @@ public class CreateActionActivity extends Activity {
         CalendarDetector detector = new CalendarDetector(config);
 
         // Then, create the action and add the detector.
-        Action action = new Action();
         action.setName(String.format("Action for calendar event containing \"%s\"", config[0]));
         action.addDetector(detector);
-
-        // Register the action with the service.
-        service.registerAction(action);
-
-        // Close activity and return to actions list.
-        finish();
     }
 
     private ServiceConnection connection = new ServiceConnection() {
