@@ -41,18 +41,6 @@ public class CalendarDetector extends Detector {
         return events;
     }
 
-
-    @Override
-    public void start() {
-        // TODO: Delete these?
-    }
-
-
-    @Override
-    public void stop() {
-        // TODO: Delete these?
-    }
-
     // The configuration UI Activity. Must have a String[] extra called "config" in its result.
     public static class Config extends Activity {
 
