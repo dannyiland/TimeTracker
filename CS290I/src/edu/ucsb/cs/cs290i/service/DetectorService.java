@@ -119,6 +119,7 @@ public class DetectorService extends Service {
         // be useful in the future.
         for (Detector d : a.getDetectors()) {
             detectors.add(d);
+            d.start(this);
         }
         actions.add(a);
     }
