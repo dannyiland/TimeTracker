@@ -25,7 +25,8 @@
         android:label="@string/app_name" >
         <activity
             android:name=".GetEventsActivity"
-            android:label="Time Tracker" >
+            android:label="Time Tracker" 
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

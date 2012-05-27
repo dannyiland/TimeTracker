@@ -23,8 +23,8 @@ public class WorkoutDetector extends Detector implements SensorEventListener {
 
     // Intensity must reach START to trigger an event. Intensity must then fall below END before
     // reaching START to prevent jitter.
-    private static final float START_THRESHOLD = 20;
-    private static final float END_THRESHOLD = 10;
+    private static final float START_THRESHOLD = 200;
+    private static final float END_THRESHOLD = 150;
 
     private SensorManager sensorService;
     private SQLiteDatabase db;
@@ -73,7 +73,7 @@ public class WorkoutDetector extends Detector implements SensorEventListener {
     public void start(Context c) {
         sensorService = (SensorManager) c.getSystemService(Context.SENSOR_SERVICE);
         sensorService.registerListener(this, sensorService.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
-                SensorManager.SENSOR_DELAY_GAME);
+                SensorManager.SENSOR_DELAY_FASTEST);
         db = EventDb.getInstance(c).getWritableDatabase();
     }
 
@@ -91,6 +91,8 @@ public class WorkoutDetector extends Detector implements SensorEventListener {
 
     @Override
     public void onSensorChanged(SensorEvent event) {
+        // TODO: This doesn't get called if the phone is completely motionless, which can prevent IDLE from being reached.
+        
         float x = event.values[0];
         float y = event.values[1];
         float z = event.values[2];
@@ -110,8 +112,10 @@ public class WorkoutDetector extends Detector implements SensorEventListener {
         if (state == State.IDLE && average > START_THRESHOLD) {
             state = State.WORKOUT;
             logEvent();
+            System.out.println("Idle --> workout");
         } else if (state == State.WORKOUT && average < END_THRESHOLD) {
             state = State.IDLE;
+            System.out.println("Workout --> idle");
         }
 
     }
