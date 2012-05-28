@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
+<string name="time_intervals">Time Ranges</string>
+    <string-array name="time_intervals">
+        <item>Today</item>
+        <item>Last Week</item>
+        <item>Last Month</item>
+    </string-array>
     <string name="hello">Hello World, CS290IActivity!</string>
     <string name="app_name">CS290I</string>
     <string name="blue">blue</string>

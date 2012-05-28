@@ -8,15 +8,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.app.Activity;
+import android.app.TabActivity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.TabHost;
 import android.widget.TextView;
 
 import com.alohar.core.Alohar;
@@ -29,12 +32,11 @@ import edu.ucsb.cs.cs290i.service.Action;
 import edu.ucsb.cs.cs290i.service.DetectorService;
 import edu.ucsb.cs.cs290i.service.DetectorService.DetectorServiceBinder;
 
-public class GetEventsActivity extends Activity {
+public class MainTabActivity extends TabActivity {
     protected static final long TEN_MINUTES = 1000 * 60 * 10;
     private static final int APP_ID = 89;
     private static final String API_KEY = "04834345f2729ceafc4c9f750ade319610560103";
     protected String alohar_uid = "0";
-    private DetectorService service;
     private Alohar mAlohar;
     private ArrayList<LocationInstance> visits = new ArrayList<LocationInstance>();
 
@@ -67,74 +69,42 @@ public class GetEventsActivity extends Activity {
         }
     };
 
-    private ServiceConnection connection = new ServiceConnection() {
-
-        @Override
-        public void onServiceConnected(ComponentName c, IBinder iBinder) {
-            DetectorServiceBinder binder = (DetectorServiceBinder) iBinder;
-            service = binder.getService();
-        }
-
-
-        @Override
-        public void onServiceDisconnected(ComponentName c) {
-        }
-
-    };
-
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.main);
-        startLocationTracking();
-        final Button showActionsList = (Button) findViewById(R.id.add);
-        final Button matchActions = (Button) findViewById(R.id.get_events);
-        final Button getLocations = (Button) findViewById(R.id.get_locations);
-        final TextView list = (TextView) findViewById(R.id.list);
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		startLocationTracking();
 
-        showActionsList.setOnClickListener(new OnClickListener() {
+		setContentView(R.layout.main);
 
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(GetEventsActivity.this, ActionsListActivity.class));
-            }
-        });
+		Resources res = getResources(); // Resource object to get Drawables
+		TabHost tabHost = getTabHost(); // The activity TabHost
+		TabHost.TabSpec spec; // Reusable TabSpec for each tab
+		Intent intent; // Reusable Intent for each tab
 
-        matchActions.setOnClickListener(new OnClickListener() {
+		// Create an Intent to launch an Activity for the tab (to be reused)
+		intent = new Intent().setClass(this, ActionsStatsActivity.class);
 
-            public void onClick(View v) {
-                StringBuilder text = new StringBuilder();
+		// Initialize a TabSpec for each tab and add it to the TabHost
+		spec = tabHost
+				.newTabSpec("actions")
+				.setIndicator("Actions",
+						res.getDrawable(R.drawable.ic_tab_actions))
+				.setContent(intent);
+		tabHost.addTab(spec);
 
-                List<Action> actions = service.matchActions(System.currentTimeMillis() - TEN_MINUTES,
-                        System.currentTimeMillis());
-                for (Action a : actions) {
-                    text.append(a.getName());
-                    text.append("\n");
-                }
-                list.setText(text);
-            }
-        });
+		// Do the same for the other tabs
+		intent = new Intent().setClass(this, ActionsStatsActivity.class);
+		spec = tabHost
+				.newTabSpec("locations")
+				.setIndicator("Locations",
+						res.getDrawable(R.drawable.ic_tab_locations))
+				.setContent(intent);
+		tabHost.addTab(spec);
 
-        getLocations.setOnClickListener(new OnClickListener() {
+		tabHost.setCurrentTab(1);
 
-            public void onClick(View v) {
-                StringBuilder text = new StringBuilder();
-
-                text.append("Locations in last 10 minutes:\n");
-                ArrayList<LocationInstance> locations = getLocations(System.currentTimeMillis() - TEN_MINUTES,
-                        System.currentTimeMillis());
-                for (LocationInstance place : locations) {
-                    text.append(place.toString());
-                }
-                list.setText(text);
-            }
-        });
-
-        Intent serviceIntent = new Intent(this, DetectorService.class);
-        startService(serviceIntent);
-        bindService(serviceIntent, connection, Context.BIND_AUTO_CREATE);
-    }
+	}
 
 
     private ArrayList<LocationInstance> getLocations(long start, long end) {

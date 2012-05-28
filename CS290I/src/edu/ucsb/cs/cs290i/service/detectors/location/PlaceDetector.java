@@ -27,7 +27,7 @@ public class PlaceDetector extends Detector {
 		@SuppressWarnings("unchecked")
 		@Override
 		public void handleEvent(ALEvents event, Object data) {
-			// Get all user Stays and create LocationInstances
+			// Get all user Stays and LocationInstances
 			if (event == ALEvents.USERSTATS_OF_A_PLACE_CALLBACK) {
 				ArrayList<UserStay> stays = (ArrayList<UserStay>) data;
 				visits.clear();
@@ -82,13 +82,11 @@ public class PlaceDetector extends Detector {
 		return ret;
 	}
 
-	@Override
 	public void start() {
 		// TODO Auto-generated method stub
 		
 	}
 
-	@Override
 	public void stop() {
 		// TODO Auto-generated method stub
 		
