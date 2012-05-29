@@ -5,9 +5,10 @@ public class LocationInstance {
 	private long endTime;
 	private double latitude;
 	private double longitude;
+	private String names;
 
 
-    public LocationInstance(double latitude, double longitude, long startTime, long endTime) {
+    public LocationInstance(String names, double latitude, double longitude, long startTime, long endTime) {
 		this.latitude = latitude;
 		this.longitude = longitude;
 		this.startTime = startTime;
@@ -37,6 +38,12 @@ public class LocationInstance {
 
 	public double getLongitude() {
 		return longitude;
+	}
+
+
+	public String getNames() {
+		// TODO Auto-generated method stub
+		return names;
 	}
 
 }

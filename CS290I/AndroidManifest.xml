@@ -24,6 +24,8 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name" >
       
+      <uses-library android:name="com.google.android.maps" />
+        
       <activity android:name=".MainTabActivity" android:label="@string/app_name"
           android:theme="@android:style/Theme.NoTitleBar"
 		android:screenOrientation="portrait">
@@ -53,7 +55,18 @@
             android:name=".service.detectors.calendar.AccountChooser"
             android:label="Google Calendar Login" >
         </activity>
-
+        <activity
+            android:name=".service.detectors.location.MapDisplay"
+            android:label="Google Map Locations Display" >      
+        </activity>
+		<service
+            android:name=".service.detectors.location.LocationServiceLogger"
+            android:exported="false"
+            android:label="Location Logger Service" >
+            <intent-filter>
+                <action android:name="edu.ucsb.cs.cs290i.service.detectors.location.LocationServiceLogger" />
+            </intent-filter>
+        </service>
         <service
             android:name=".service.DetectorService"
             android:exported="false"

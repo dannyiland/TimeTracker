@@ -32,7 +32,7 @@ public class PlaceDetector extends Detector {
 				ArrayList<UserStay> stays = (ArrayList<UserStay>) data;
 				visits.clear();
 				for (UserStay stay : stays) {
-					LocationInstance newLoc = new LocationInstance(stay.getCentroidLatE6(),
+					LocationInstance newLoc = new LocationInstance(stay.getSelectedPlace().getName(), stay.getCentroidLatE6(),
 							stay.getCentroidLngE6(), stay.getStartTime(), stay.getEndTime());
 					visits.add(newLoc);
 				}

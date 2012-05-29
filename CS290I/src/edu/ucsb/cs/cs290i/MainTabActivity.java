@@ -31,6 +31,7 @@ import com.alohar.user.content.data.UserStay;
 import edu.ucsb.cs.cs290i.service.Action;
 import edu.ucsb.cs.cs290i.service.DetectorService;
 import edu.ucsb.cs.cs290i.service.DetectorService.DetectorServiceBinder;
+import edu.ucsb.cs.cs290i.service.detectors.location.MapDisplay;
 
 public class MainTabActivity extends TabActivity {
     protected static final long TEN_MINUTES = 1000 * 60 * 10;
@@ -94,7 +95,7 @@ public class MainTabActivity extends TabActivity {
 		tabHost.addTab(spec);
 
 		// Do the same for the other tabs
-		intent = new Intent().setClass(this, ActionsStatsActivity.class);
+		intent = new Intent().setClass(this, MapDisplay.class);
 		spec = tabHost
 				.newTabSpec("locations")
 				.setIndicator("Locations",

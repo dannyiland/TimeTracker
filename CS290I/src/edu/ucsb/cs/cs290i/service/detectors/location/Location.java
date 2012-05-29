@@ -2,15 +2,15 @@ package edu.ucsb.cs.cs290i.service.detectors.location;
 
 public class Location {
 
-	private int latitude;
-	private int longitude;
+	private long latitude;
+	private long longitude;
 	private String name;
 	private long radius; // in meters
 
-	public Location(String name, int latitude, int longitude, long radius) {
+	public Location(String name, long lat, long lon, long radius) {
 		this.name = name;
-		this.latitude = latitude;
-		this.longitude = longitude;
+		this.latitude = lat;
+		this.longitude = lon;
 		this.radius = radius;
 	}
 

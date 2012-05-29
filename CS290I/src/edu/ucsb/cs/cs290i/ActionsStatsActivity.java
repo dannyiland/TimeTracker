@@ -81,14 +81,14 @@ public class ActionsStatsActivity extends Activity {
     	startService(serviceIntent);	
     	bindService(serviceIntent, connection, Context.BIND_AUTO_CREATE);
         
-        setContentView(R.layout.actions_stats);
-        list = (TextView) findViewById(R.id.list);
-        
-        Spinner spinner = (Spinner) findViewById(R.id.spinner);
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
-                this, R.array.time_intervals, android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(adapter);
+//        setContentView(R.layout.actions_stats);
+//        list = (TextView) findViewById(R.id.list);
+//        
+//        Spinner spinner = (Spinner) findViewById(R.id.spinner);
+//        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
+//                this, R.array.time_intervals, android.R.layout.simple_spinner_item);
+//        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+//        spinner.setAdapter(adapter);
         //spinner.setOnItemSelectedListener(new OnTimeRangeSelectedListener());
         
      }
