@@ -4,7 +4,6 @@
 
 package edu.ucsb.cs.cs290i;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import android.app.Activity;
@@ -14,21 +13,13 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.util.Log;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
-
-import com.alohar.core.Alohar;
-import com.alohar.user.callback.ALEventListener;
-import com.alohar.user.content.data.ALEvents;
-import com.alohar.user.content.data.PlaceProfile;
-import com.alohar.user.content.data.UserStay;
-
 import edu.ucsb.cs.cs290i.service.Action;
 import edu.ucsb.cs.cs290i.service.DetectorService;
 import edu.ucsb.cs.cs290i.service.DetectorService.DetectorServiceBinder;
@@ -38,9 +29,11 @@ public class ActionsStatsActivity extends Activity {
     private DetectorService service;
     private TextView list;
     private ServiceConnection connection = new ServiceConnection() {
-
+       
         @Override
         public void onServiceConnected(ComponentName c, IBinder iBinder) {
+            Log.e("!!", "Service Connected");
+
             DetectorServiceBinder binder = (DetectorServiceBinder) iBinder;
             service = binder.getService();
         }
@@ -51,11 +44,13 @@ public class ActionsStatsActivity extends Activity {
         }
 
     };
+    private Spinner spinner;
 
     public class OnTimeRangeSelectedListener implements OnItemSelectedListener {
 
         public void onItemSelected(AdapterView<?> parent,
             View view, int pos, long id) {
+            Log.e("!!", "Selected");
         	StringBuilder text = new StringBuilder();
         	parent.getItemAtPosition(pos).toString();
         	List<Action> actions = 
@@ -77,20 +72,20 @@ public class ActionsStatsActivity extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-       	Intent serviceIntent = new Intent(this, DetectorService.class);
-    	startService(serviceIntent);	
-    	bindService(serviceIntent, connection, Context.BIND_AUTO_CREATE);
+       	Intent serviceIntent = new Intent(getApplicationContext(), DetectorService.class);
+    	getApplicationContext().startService(serviceIntent);	
+    	getApplicationContext().bindService(serviceIntent, connection, Context.BIND_AUTO_CREATE);
         
-//        setContentView(R.layout.actions_stats);
-//        list = (TextView) findViewById(R.id.list);
-//        
-//        Spinner spinner = (Spinner) findViewById(R.id.spinner);
-//        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
-//                this, R.array.time_intervals, android.R.layout.simple_spinner_item);
-//        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-//        spinner.setAdapter(adapter);
-        //spinner.setOnItemSelectedListener(new OnTimeRangeSelectedListener());
+        setContentView(R.layout.actions_stats);
+        list = (TextView) findViewById(R.id.list);
         
+        spinner = (Spinner) findViewById(R.id.spinner);
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
+                this, R.array.time_intervals, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
+        spinner.setOnItemSelectedListener(new OnTimeRangeSelectedListener());
+
      }
 
 
