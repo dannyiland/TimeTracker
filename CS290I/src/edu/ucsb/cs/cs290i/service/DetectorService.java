@@ -1,5 +1,12 @@
 package edu.ucsb.cs.cs290i.service;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -11,6 +18,7 @@ import android.content.SharedPreferences;
 import android.os.Binder;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import edu.ucsb.cs.cs290i.service.detectors.Detector;
 import edu.ucsb.cs.cs290i.service.detectors.Event;
 import edu.ucsb.cs.cs290i.service.detectors.calendar.AccountChooser;
@@ -23,6 +31,7 @@ public class DetectorService extends Service {
 
     private long lastTime;
     private List<Action> actions;
+    private boolean restoringActions;
 
 
     public DetectorService() {
@@ -56,6 +65,55 @@ public class DetectorService extends Service {
             CalendarDataSource.getInstance().setAuthToken(authToken);
         }
 
+        // Restore saved Detectors/Actions.
+        try {
+            restoringActions = true;
+            ObjectInputStream ois = new ObjectInputStream(new FileInputStream(getActionsFile()));
+            @SuppressWarnings("unchecked")
+            List<Action> actions = (List<Action>) ois.readObject();
+            ois.close();
+            for (Action a : actions) {
+                registerAction(a);
+            }
+        } catch (FileNotFoundException e) {
+            Log.w("DetectorService", "Saved Actions file not found");
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } finally {
+            restoringActions = false;
+        } 
+
+    }
+
+
+    @Override
+    public void onDestroy() {
+        Log.e("DetectorService", "onDestroy()");
+
+        saveActions();
+
+        super.onDestroy();
+    }
+
+
+    private void saveActions() {
+        // Save Detectors/Actions.
+        try {
+            ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(getActionsFile()));
+            oos.writeObject(actions);
+            oos.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    private File getActionsFile() {
+        return new File(getDir("persist", 0), "actions.dat");
     }
 
 
@@ -122,6 +180,10 @@ public class DetectorService extends Service {
             d.start(this);
         }
         actions.add(a);
+        
+        if (!restoringActions) {
+            saveActions();
+        }
     }
 
     public class ConfidenceComparator implements Comparator<Event> {

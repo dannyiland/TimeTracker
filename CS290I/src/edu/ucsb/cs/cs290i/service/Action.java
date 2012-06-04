@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import android.util.Log;
 import edu.ucsb.cs.cs290i.service.detectors.Detector;
 import edu.ucsb.cs.cs290i.service.detectors.Event;
 
@@ -71,6 +72,7 @@ public class Action implements Externalizable {
                 System.out.printf("Created detector %s(%s)\n", c.getName(), Arrays.toString(params));
                 detectors.add(detector);
             } catch (Exception e) {
+                Log.e("Action", "Error recreating Detector:");
                 e.printStackTrace();
             }
         }
@@ -86,7 +88,8 @@ public class Action implements Externalizable {
             output.writeObject(d.getClass());
         }
     }
-    
+
+
     @Override
     public String toString() {
         return getName();
