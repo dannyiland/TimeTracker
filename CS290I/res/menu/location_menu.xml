@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
-    <item android:id="@+id/current_loc" android:title="Remember Current Location"></item>
-    <item android:id="@+id/todays_activities" android:title="View Today's Activities"></item>
+    <item android:id="@+id/todays_activities" android:title="View Detected Actions"></item>    
+    <item android:id="@+id/update_locations" android:title="Reposition Locations"></item>
+    <item android:id="@+id/edit_locations" android:title="All Known Locations"></item>
+    <item android:id="@+id/voice_command" android:title="Voice Command"></item>
 </menu>
