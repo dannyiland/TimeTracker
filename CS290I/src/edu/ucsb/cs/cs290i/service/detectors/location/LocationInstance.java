@@ -5,6 +5,7 @@ public class LocationInstance {
 	private long endTime;
 	private double latitude;
 	private double longitude;
+
 	private String names;
 
 

@@ -3,8 +3,8 @@ package edu.ucsb.cs.cs290i.service.detectors.location;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
+import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
 
 import com.alohar.core.Alohar;
 import com.alohar.user.callback.ALEventListener;
@@ -12,13 +12,16 @@ import com.alohar.user.callback.ALPlaceEventListener;
 import com.alohar.user.content.data.ALEvents;
 import com.alohar.user.content.data.PlaceProfile;
 import com.alohar.user.content.data.UserStay;
+import com.google.android.maps.MapView;
 
+import edu.ucsb.cs.cs290i.service.EventDb;
 import edu.ucsb.cs.cs290i.service.detectors.Detector;
 import edu.ucsb.cs.cs290i.service.detectors.Event;
 
 public class PlaceDetector extends Detector {
-	static ArrayList<LocationInstance> visits = new ArrayList<LocationInstance>();
-
+	static ArrayList<LocationInstance> visits = new ArrayList<LocationInstance>();	
+	SQLiteDatabase db = null;
+	
 	private PlaceDetector(String... params){
 		super(params);
 	}
@@ -69,6 +72,24 @@ public class PlaceDetector extends Detector {
 		}    
 	};
 
+
+    @Override
+    public void start(Context c) {
+        db = EventDb.getInstance(c).getWritableDatabase();
+    }
+
+
+    @Override
+    public void stop(Context c) {
+        if (db != null) {
+            db.close();
+        }
+    }
+    
+    public static int metersToRadius(float meters, MapView map, double latitude) {
+        return (int) (map.getProjection().metersToEquatorPixels(meters) * (1/ Math.cos(Math.toRadians(latitude))));         
+    }
+
 	// Listen for place events 
 	@Override
 	public List<Event> getEvents(long startTime, long endTime) {
@@ -91,6 +112,6 @@ public class PlaceDetector extends Detector {
 		// TODO Auto-generated method stub
 		
 	}
-
+	
 }
 

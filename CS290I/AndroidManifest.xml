@@ -57,7 +57,15 @@
         </activity>
         <activity
             android:name=".service.detectors.location.MapDisplay"
-            android:label="Google Map Locations Display" >      
+            android:label="Actions and Places" >      
+        </activity>        
+        <activity
+            android:name=".service.detectors.location.AddLocationActivity"
+            android:label="Create a new Location" >      
+        </activity>        
+        <activity
+            android:name=".service.detectors.location.MoveLocationsMapDisplay"
+            android:label="Relocate your Places!" >      
         </activity>
 		<service
             android:name=".service.detectors.location.LocationServiceLogger"

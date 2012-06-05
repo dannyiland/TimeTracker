@@ -2,8 +2,6 @@ package edu.ucsb.cs.cs290i.service.detectors.location;
 
 import java.util.ArrayList;
 
-import edu.ucsb.cs.cs290i.service.EventDb;
-
 import android.app.Service;
 import android.content.ContentValues;
 import android.content.Context;
@@ -26,11 +24,36 @@ public class LocationServiceLogger extends Service {
 	private long MIN_TIME_BETWEEN_UPDATES_MS = 30000; //30 seconds between location polls
 	public static final String ALL_KNOWN_LOCATIONS = LocationDB.KEY_LATITUDE + " > -180 AND " + LocationDB.KEY_LATITUDE + " < 180" ;
 
+	//
+//	private ALEventListener alEventListener = new ALEventListener() {
+//		@SuppressWarnings("unchecked")
+//		@Override
+//		public void handleEvent(ALEvents event, Object data) {
+//			if (event == ALEvents.USERSTATS_OF_A_PLACE_CALLBACK) {
+//				ArrayList<UserStay> stays = (ArrayList<UserStay>) data;
+//				for (UserStay stay : stays) {
+//					LocationInstance newLoc = new LocationInstance(stay.getCandidates(), stay.getCentroidLatE6(),
+//							stay.getCentroidLngE6(), stay.getStartTime(), stay.getEndTime());
+//					//visits.add(newLoc);
+//				}
+//			} else if (event == ALEvents.PLACES_QUERY_CALLBACK) {
+//				ArrayList<PlaceProfile> places = (ArrayList<PlaceProfile>) data;
+//				// Post process the places
+//				for (PlaceProfile place : places) {
+//					mAlohar.getPlaceManager().getUserStays(place, alEventListener);
+//				}
+//			}
+//		}
+//	};
+//	
+	
 
 	// Adds a location to database on departure, with arrival and departure time, lat/long, and name if known.
 	public void addLocationEntry(android.location.Location location) {
-		if(lastKnownLocation == null) {
+		long startTime = 0;
+		if(startTime == 0 | lastKnownLocation == null) {
 			lastKnownLocation = location;
+			startTime = lastKnownLocation.getTime();
 		} else {
 			if (lastKnownLocation.distanceTo(location) > DEFAULT_RADIUS_METERS) {
 				// We are still here!
@@ -38,34 +61,29 @@ public class LocationServiceLogger extends Service {
 			} else {
 				// We've moved! Add the lastKnownLocation to the database
 				ContentValues values = new ContentValues();
-				values.put(LocationDB.KEY_STARTTIME, lastKnownLocation.getTime());
+				values.put(LocationDB.KEY_STARTTIME, startTime);
 				values.put(LocationDB.KEY_ENDTIME, lastRecordedTime);
 				values.put(LocationDB.KEY_LATITUDE, lastKnownLocation.getLatitude());
 				values.put(LocationDB.KEY_LONGITUDE, lastKnownLocation.getLongitude());
-
-				ArrayList<Location> thisLocation = checkKnownLocations(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
-				if(thisLocation.size() >= 1) {
-					String locationsString = "";
-					for (Location l : thisLocation) {
-						locationsString = locationsString + l.getName() + ",";
-					}
-					values.put(LocationDB.KEY_KNOWN, locationsString.substring(0, locationsString.length() -1)); // Strip last ,
-				}
-
+				values.put(LocationDB.KEY_NAME, "The name of this place");
 				getDatabase().insert(LocationDB.LOCATION_TABLE_NAME, null, values);
-				System.out.println("Added: " + lastKnownLocation.getLatitude() + " , " + lastKnownLocation.getLongitude()); 
-				// Then set lastKnownLocation to this location!
+				System.out.println("Created new stay from Google Location Service:\n " + 
+						lastKnownLocation.getLatitude() + " , " + lastKnownLocation.getLongitude() + 
+						"\nFrom: " + startTime + " to " + lastRecordedTime); 
+				// Then set lastKnownLocation to this location and start looking for a new one!
 				lastKnownLocation = location;
+				startTime = 0;
+
 			}
 		}
 	}
+
 
 	// Returns any Location that matches the provided coordinates
 	private ArrayList<Location> checkKnownLocations(double latitude, double longitude) {
 		ArrayList<Location> locations = new ArrayList<Location>();
 		float[] distance = new float[1];
 		distance[0] = Float.MAX_VALUE;
-		// Could possibly filter on query?
 		Cursor c = getDatabase().query(LocationDB.KNOWN_LOCATION_TABLE_NAME, null, ALL_KNOWN_LOCATIONS,null,null, null, null);
 		if (c.getCount() > 0) {
 			c.moveToFirst();
@@ -85,14 +103,11 @@ public class LocationServiceLogger extends Service {
 		return locations;
 	}
 
-	public LocationServiceLogger() {
-
-	}
+	public LocationServiceLogger() {}
 
 	@Override
 	public void onCreate() {
 		super.onCreate();
-		Context c = this;
 		// CREATE a test entry
 		ContentValues values = new ContentValues();
 		values.put(LocationDB.KEY_STARTTIME, System.currentTimeMillis());
@@ -114,8 +129,10 @@ public class LocationServiceLogger extends Service {
 				addLocationEntry(location);
 			}
 		};
-		locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, MIN_TIME_BETWEEN_UPDATES_MS, DEFAULT_RADIUS_METERS/2, locationListener);
-		locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MIN_TIME_BETWEEN_UPDATES_MS, DEFAULT_RADIUS_METERS/2, locationListener);
+		// Get network provider location every minute
+		locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, MIN_TIME_BETWEEN_UPDATES_MS*2, DEFAULT_RADIUS_METERS/2, locationListener);
+		// Get GPS every 5 minutes
+		locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MIN_TIME_BETWEEN_UPDATES_MS*10, DEFAULT_RADIUS_METERS/2, locationListener);
 	}
 
 	private SQLiteDatabase getDatabase() {
@@ -131,6 +148,9 @@ public class LocationServiceLogger extends Service {
 		}
 	}
 
+	public android.location.Location getCurrentLocation() {
+		return lastKnownLocation;		
+	}
 
 	@Override
 	public IBinder onBind(Intent arg0) {
