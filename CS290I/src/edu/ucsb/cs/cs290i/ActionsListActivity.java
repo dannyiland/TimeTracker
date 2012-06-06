@@ -11,15 +11,18 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 import edu.ucsb.cs.cs290i.service.Action;
 import edu.ucsb.cs.cs290i.service.DetectorService;
 import edu.ucsb.cs.cs290i.service.DetectorService.DetectorServiceBinder;
+import edu.ucsb.cs.cs290i.service.detectors.calendar.CalendarDetector;
 
 public class ActionsListActivity extends ListActivity {
     private DetectorService service;
@@ -51,6 +54,17 @@ public class ActionsListActivity extends ListActivity {
 
         bindService(serviceIntent, connection, Context.BIND_AUTO_CREATE);
 
+        setContentView(R.layout.actions_list);
+        Button add = (Button) findViewById(R.id.add);
+        add.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(ActionsListActivity.this, CreateActionActivity.class));
+
+            }
+        });
+        
         ListView lv = getListView();
         lv.setOnItemClickListener(new OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view,
