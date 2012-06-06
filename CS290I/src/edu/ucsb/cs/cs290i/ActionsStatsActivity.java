@@ -14,6 +14,9 @@ import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
@@ -88,6 +91,28 @@ public class ActionsStatsActivity extends Activity {
 
      }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.actions_stats_menu, menu);
+        return true;
+    }
 
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+        case R.id.manage:
+            manageAction();
+            return true;
+        default:
+            return super.onOptionsItemSelected(item);
+        }
+    }
+
+
+    private void manageAction() {
+        startActivity(new Intent(this, ActionsListActivity.class));
+    }
   
 }
