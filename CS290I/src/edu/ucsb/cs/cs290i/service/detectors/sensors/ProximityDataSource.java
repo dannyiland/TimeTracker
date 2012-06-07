@@ -1,11 +1,9 @@
 package edu.ucsb.cs.cs290i.service.detectors.sensors;
 
-import java.util.LinkedList;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import edu.ucsb.cs.cs290i.service.EventDb;
-import edu.ucsb.cs.cs290i.service.detectors.sensors.WorkoutDataSource.State;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
