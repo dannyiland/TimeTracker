@@ -72,7 +72,7 @@ public class LocationDB extends SQLiteOpenHelper {
     
    
     private static final String CREATE_LATLON_CACHE_TABLE = 
-    		"CRAETE TABLE IF NOT EXISTS " + CACHE_TABLE_NAME + " (" +
+    		"CREATE TABLE IF NOT EXISTS " + CACHE_TABLE_NAME + " (" +
     				KEY_NAME_LOC + " TEXT," +
     				KEY_LATITUDE + " INTEGER, " + 
     	    		KEY_LONGITUDE+ " INTEGER, " + 
@@ -99,8 +99,9 @@ public class LocationDB extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
     	database = db;
         System.out.println("Create DB");
-        db.execSQL("TRUNCATE TABLE " + CREATE_KNOWN_LOCATION_TABLE);
-        db.execSQL("TRUNCATE TABLE " + CREATE_LOCATION_INSTANCE_TABLE);
+        // This doesn't make sense. This method is only called when the database (and its tables) don't exist. Truncate requires that the table exist.
+//        db.execSQL("TRUNCATE TABLE " + CREATE_KNOWN_LOCATION_TABLE);
+//        db.execSQL("TRUNCATE TABLE " + CREATE_LOCATION_INSTANCE_TABLE);
         db.execSQL(CREATE_LOCATION_INSTANCE_TABLE);
         db.execSQL(CREATE_KNOWN_LOCATION_TABLE);
         db.execSQL(CREATE_LATLON_CACHE_TABLE);
@@ -122,7 +123,8 @@ public class LocationDB extends SQLiteOpenHelper {
     	ContentValues val = new ContentValues();
     	val.put(KEY_LATITUDE, newLat);
     	val.put(KEY_LONGITUDE, newLon);
-    	int numChanged = LocationDB.getInstance(context).getWritableDatabase().update(KNOWN_LOCATION_TABLE_NAME, val, KEY_NAME + "=" + name, null);
+        int numChanged = LocationDB.getInstance(context).getWritableDatabase()
+                .update(KNOWN_LOCATION_TABLE_NAME, val, KEY_NAME + " = ?", new String[] { name });
     	System.out.println("Moved location " + name + " from " + oldLat + "," + oldLon + " to " + newLat + "," + newLon);
     	return numChanged;
     }
