@@ -6,16 +6,20 @@ public class Location {
 	private double longitude;
 	private String name;
 	private long radius; // in meters
-	private double minLat;
-	private double minLon;
-	private double maxLat;
-	private double maxLon;
+	private long timestamp;
+	private String[] types = null;
 	
-	public Location(String name, double d, double e, long radius) {
+	public Location(String name, double lat, double lon, long radius, String... type) {
 		this.name = name;
-		this.latitude = d;
-		this.longitude = e;
+		this.latitude = lat;
+		this.longitude = lon;
 		this.radius = radius;
+		if ( type != null ) {
+			types = new String[type.length];
+			for( int i=0; i< type.length;i++) {
+				types[i] = type[i];
+			}
+		}
 		//Calculate those others.
 	
 	}
@@ -72,5 +76,24 @@ public class Location {
 		android.location.Location.distanceBetween(candidate.getLatitude(), candidate.getLongitude(),
 				loc.getLatitude(), loc.getLongitude(), results);
 		return results[0];
+	}
+
+	public long getTimestamp() {
+		return timestamp;
+	}
+	
+	public void setTimestamp(long time) {
+		timestamp = time;
+	}
+
+	public String getType() {
+		// TODO Auto-generated method stub
+		String returnString = "";
+		if ( types != null ) {
+			for(int i=0;i<types.length;i++) {
+				returnString = returnString + types[i];
+			}
+		}
+		return returnString;
 	}
 }

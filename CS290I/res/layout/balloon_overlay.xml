@@ -11,56 +11,65 @@
 	android:paddingTop="0dip"
 	android:paddingRight="0dip">
 
-	<LinearLayout 
-		android:layout_width="wrap_content" 
-		android:layout_height="wrap_content"
-		android:orientation="vertical" 
-		android:layout_weight="1"
-		android:paddingTop="10dip" 
-		android:id="@+id/balloon_inner_layout">
-		<TextView android:layout_height="wrap_content"
-			android:layout_width="fill_parent" 
-			android:id="@+id/balloon_item_title"
-			android:text="Name" 
-			android:textSize="16dip"
-			android:textColor="#FF000000"></TextView>
-		<TextView android:layout_height="wrap_content"
-			android:layout_width="fill_parent" 
-			android:id="@+id/balloon_item_snippet"
-			android:text="X Visits, last: X to Y" 
-			android:textSize="14dip"
-			android:textColor="#FF000000"></TextView>
+	<LinearLayout
+	    android:id="@+id/balloon_inner_layout"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_weight="1"
+	    android:orientation="vertical"
+	    android:paddingTop="10dip" >
 
-		<LinearLayout
-		    android:layout_width="match_parent"
-		    android:layout_height="wrap_content" >
+	    <Button
+	        android:id="@+id/button1"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:text="Remember this Location" />
 
-			<Spinner
-			    android:id="@+id/nameSpinner"
-			    android:layout_width="match_parent"
-			    android:layout_height="30dp"
-			    android:layout_weight="1" />
+	    <TextView
+	        android:id="@+id/balloon_item_title"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:text="Name"
+	        android:textColor="#FF000000"
+	        android:textSize="16dip" >
+	    </TextView>
 
-		</LinearLayout>
+	    <TextView
+	        android:id="@+id/balloon_item_snippet"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:text="X Visits, last: X to Y"
+	        android:textColor="#FF000000"
+	        android:textSize="14dip" >
+	    </TextView>
 
-		<LinearLayout
-		    android:layout_width="match_parent"
-		    android:layout_height="wrap_content" >
+	    <LinearLayout
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content" >
 
-			<TextView
-			    android:id="@+id/radiusView"
-			    android:layout_width="wrap_content"
-			    android:layout_height="match_parent"
-			    android:text="50 m" />
+	        <Spinner
+	            android:id="@+id/nameSpinner"
+	            android:layout_width="match_parent"
+	            android:layout_height="30dp"
+	            android:layout_weight="1" />
+	    </LinearLayout>
 
-			<SeekBar
-			    android:id="@+id/radiusBar"
-			    android:layout_width="match_parent"
-			    android:layout_height="wrap_content"
-			    android:layout_weight="1" />
+	    <LinearLayout
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content" >
 
-		</LinearLayout>
+	        <TextView
+	            android:id="@+id/radiusView"
+	            android:layout_width="wrap_content"
+	            android:layout_height="match_parent"
+	            android:text="50 m" />
 
+	        <SeekBar
+	            android:id="@+id/radiusBar"
+	            android:layout_width="match_parent"
+	            android:layout_height="wrap_content"
+	            android:layout_weight="1" />
+	    </LinearLayout>
 	</LinearLayout>
 	
 	<ImageView android:layout_width="wrap_content"

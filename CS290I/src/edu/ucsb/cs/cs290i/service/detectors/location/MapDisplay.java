@@ -228,16 +228,17 @@ public class MapDisplay extends MapActivity implements ALEventListener{
 			aloharItems = new ArrayList<OverlayItem>();
 			userStays = (ArrayList<UserStay>)data;
 			for (UserStay stay : userStays) {
-				locs.add(new LocationInstance(stay.getSelectedPlace().getName(),
-						((double)stay.getCentroidLatE6())/1000000,
-						((double)stay.getCentroidLngE6())/1000000,
-						stay.getStartTime(),
-						stay.getEndTime()));
+//				locs.add(new LocationInstance(stay.getSelectedPlace().getName(),
+//						((double)stay.getCentroidLatE6())/1000000,
+//						((double)stay.getCentroidLngE6())/1000000,
+//						stay.getStartTime(),
+//						stay.getEndTime()));
 				aloharItems.add(new OverlayItem(getPoint(((double)stay.getCentroidLatE6())/1000000,
 						((double)stay.getCentroidLngE6())/1000000),
 						stay.getSelectedPlace().getName(),
-						"Visited from " + new Date(stay.getStartTime()).toGMTString() + " to " + new Date(stay.getEndTime()).toGMTString()));
+						"Visited from " + new Date(stay.getStartTime()*1000).toGMTString() + " to " + new Date(1000*stay.getEndTime()).toGMTString()));
 			}
+		addOverlay(aloharItems);
 		}
 	}
 
@@ -257,36 +258,35 @@ public class MapDisplay extends MapActivity implements ALEventListener{
 		// Add Alohar Stays in time range and all detected LocationInstances from Google.
 
 		ALPlaceManager a = Alohar.getInstance().getPlaceManager();
-		a.searchUserStays(UCSB_lat, UCSB_lon, 50000, 0, System.currentTimeMillis()/1000, true, 100, this);
+		a.searchUserStays(UCSB_lat, UCSB_lon, 50000, startTimeMS/1000, endTimeMS/1000, true, 100, this);
 
 		Drawable marker=this.getResources().getDrawable(R.drawable.marker);
 		if(marker != null) {
 			marker.setBounds(0, 0, marker.getIntrinsicWidth(),
 					marker.getIntrinsicHeight());
 			ArrayList<OverlayItem> items = new ArrayList<OverlayItem>();
-			ArrayList<LocationInstance> instances = LocationDB.getInstance(this).getAllKnownLocations(this.getApplicationContext());
-			ArrayList<Location> locations = new ArrayList<Location>();
-			// Merge locations with already known locations within the default radius.
-			boolean found = false;
-			for (LocationInstance inst : instances) {
-				for( Location loc : locations) {
-					if (loc.matches(inst)) {
-						found = true;
-						break; // We don't need to map this inst, it's already mapped.
-					}
-				}
+			ArrayList<Location> locations = LocationDB.getInstance(this).getAllKnownLocations(this.getApplicationContext());
+//			ArrayList<LocationInstance> instances = LocationDB.getInstance(this).getLocationsInRange(this.getApplicationContext(), startTimeMS, endTimeMS);
+//			// Merge locations with already known locations within the default radius.
+//			boolean found = false;
+//			for (LocationInstance inst : instances) {
+//				for( Location loc : locations) {
+//					if (loc.matches(inst)) {
+//						found = true;
+//						break; // We don't need to map this inst, it's already mapped.
+//					}
+//				}
+//
+//				if(!found) {
+//					locations.add(new Location(inst.getNames(), inst.getLatitude(), inst.getLongitude(),DEFAULT_RADIUS_METERS));
+//					items.add(new OverlayItem(getPoint(inst.getLatitude(), inst.getLongitude()), inst.getNames(), "Visited from " + new Date(inst.getStartTime()*1000).toGMTString() + " to " + new Date(inst.getEndTime()*1000).toGMTString()));
+//					found = false;
+//				}
+//			}
 
-				if(!found) {
-					locations.add(new Location(inst.getNames(), inst.getLatitude(), inst.getLongitude(),DEFAULT_RADIUS_METERS));
-					items.add(new OverlayItem(getPoint(inst.getLatitude(), inst.getLongitude()), inst.getNames(), "Visited from " + new Date(inst.getStartTime()).toGMTString() + " to " + new Date(inst.getEndTime()).toGMTString()));
-					found = false;
-				}
-			}
-
-			map.getOverlays().add(new SitesOverlay(marker, items));
-			me=new MyLocationOverlay(this, map);
-			map.getOverlays().add(me);
-			addOverlay(aloharItems);
+//			map.getOverlays().add(new SitesOverlay(marker, items));
+//			me=new MyLocationOverlay(this, map);
+//			map.getOverlays().add(me);
 
 
 		} else {
@@ -342,84 +342,5 @@ public class MapDisplay extends MapActivity implements ALEventListener{
 			return(items.size());
 		}
 
-		//		@Override
-		//		public boolean onTouchEvent(MotionEvent event, MapView mapView) {
-		//			final int action=event.getAction();
-		//			final int x=(int)event.getX();
-		//			final int y=(int)event.getY();
-		//			boolean result=false;
-		//
-		//			if (action==MotionEvent.ACTION_DOWN) {
-		//				for (OverlayItem item : items) {
-		//					Point p=new Point(0,0);
-		//
-		//					map.getProjection().toPixels(item.getPoint(), p);
-		//
-		//					if (hitTest(item, marker, x-p.x, y-p.y)) {
-		//						result=true;
-		//						inDrag=item;
-		//						items.remove(inDrag);
-		//						populate();
-		//
-		//						xDragTouchOffset=0;
-		//						yDragTouchOffset=0;
-		//
-		//						setDragImagePosition(p.x, p.y);
-		//						dragImage.setVisibility(View.VISIBLE);
-		//
-		//						xDragTouchOffset=x-p.x;
-		//						yDragTouchOffset=y-p.y;
-		//
-		//						break;
-		//					}
-		//				}
-		//			}
-		//			else if (action==MotionEvent.ACTION_MOVE && inDrag!=null) {
-		//				setDragImagePosition(x, y);
-		//				
-		//				result=true;
-		//			}
-		//			else if (action==MotionEvent.ACTION_UP && inDrag!=null) {
-		//				dragImage.setVisibility(View.GONE);
-		//
-		//				GeoPoint pt=map.getProjection().fromPixels(x-xDragTouchOffset,
-		//						y-yDragTouchOffset);
-		//				OverlayItem toDrop=new OverlayItem(pt, inDrag.getTitle(),
-		//						inDrag.getSnippet());
-		//				inDrag.getPoint().getLatitudeE6();
-		//				inDrag.getPoint().getLongitudeE6();
-		//				float[] distance = new float[1];
-		//				android.location.Location.distanceBetween( ((double)pt.getLatitudeE6()/1000000), ((double)pt.getLongitudeE6())/1000000, ((double)inDrag.getPoint().getLatitudeE6())/1000000, ((double)inDrag.getPoint().getLongitudeE6())/1000000, distance);
-		//				if (distance[0] > MIN_MOVE_DISTANCE) {
-		//					System.out.println("Moved pin" + distance[0] + " meters");
-		//					System.out.println("Relocated pin to : "+ ((double)pt.getLatitudeE6())/1000000 + " , " + ((double)pt.getLongitudeE6())/1000000);
-		//					// Update the location's lat/lon in the database!
-		//				} else {
-		//					System.out.print("Did not relocate pin! Display info!");
-		////					popUp = getLayoutInflater().inflate(R.layout.popup, map, false);
-		////					MapView.LayoutParams mapParams = new MapView.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, 
-		////	                        ViewGroup.LayoutParams.WRAP_CONTENT,
-		////	                        inDrag.getPoint(), 0,-50,
-		////	                        MapView.LayoutParams.BOTTOM_CENTER);
-		////					map.addView(popUp, mapParams);
-		////					//POPUP for this pin!
-		//				}
-		//				items.add(toDrop);
-		//				populate();
-		//				inDrag=null;
-		//				result=true;
-		//			}
-		//
-		//			return(result || super.onTouchEvent(event, mapView));
-		//		}
-
-		private void setDragImagePosition(int x, int y) {
-			RelativeLayout.LayoutParams lp=
-					(RelativeLayout.LayoutParams)dragImage.getLayoutParams();
-
-			lp.setMargins(x-xDragImageOffset-xDragTouchOffset,
-					y-yDragImageOffset-yDragTouchOffset, 0, 0);
-			dragImage.setLayoutParams(lp);
-		}
 	}
 }

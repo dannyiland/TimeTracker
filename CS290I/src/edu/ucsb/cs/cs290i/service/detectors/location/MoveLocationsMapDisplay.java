@@ -38,6 +38,10 @@ import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.alohar.core.Alohar;
+import com.alohar.user.callback.ALEventListener;
+import com.alohar.user.content.ALPlaceManager;
+import com.alohar.user.content.data.ALEvents;
+import com.alohar.user.content.data.PlaceProfile;
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.ItemizedOverlay;
 import com.google.android.maps.MapActivity;
@@ -48,7 +52,9 @@ import com.google.android.maps.OverlayItem;
 import edu.ucsb.cs.cs290i.R;
 
 
-public class MoveLocationsMapDisplay extends MapActivity {
+public class MoveLocationsMapDisplay extends MapActivity implements ALEventListener {
+	private ArrayList<OverlayItem> aloharPlaces=new ArrayList<OverlayItem>();
+	int sizeOfap = 0;
 	private MapView map = null;
 	private MyLocationOverlay me=null;
 	private double UCSB_lat = 34.41498;
@@ -105,8 +111,17 @@ public class MoveLocationsMapDisplay extends MapActivity {
 		int[] latLon = getIntent().getIntArrayExtra("latLon");
 		map.getController().setCenter(new GeoPoint(latLon[0], latLon[1]));
 		displayKnownLocations(System.currentTimeMillis()-(24*60*60*1000), System.currentTimeMillis());
+		getAloharPlaces();
 	}
 
+
+	private void getAloharPlaces() {
+		ArrayList<OverlayItem> items;// TODO Auto-generated method stub
+		ALPlaceManager mPlaceManager = Alohar.getInstance().getPlaceManager();
+		mPlaceManager.searchPlaces(0, System.currentTimeMillis()/ 1000, ".*", 0, 100, this);
+
+
+	}
 
 	public GeoPoint getPoint(double lat, double lon) {
 		return(new GeoPoint((int)(lat*1000000.0),
@@ -175,6 +190,17 @@ public class MoveLocationsMapDisplay extends MapActivity {
 		}
 	}
 
+	private void addOverlay(ArrayList<OverlayItem> items) {
+		Drawable marker=this.getResources().getDrawable(R.drawable.marker);
+		if(marker != null) {
+			marker.setBounds(0, 0, marker.getIntrinsicWidth(),	marker.getIntrinsicHeight());
+		}
+		if(items.size() != 0) {
+			map.getOverlays().add(new SitesOverlay(marker, items));
+			me=new MyLocationOverlay(this, map);
+			map.getOverlays().add(me);
+		}
+	}
 
 
 	private class SitesOverlay extends ItemizedOverlay<OverlayItem> {
@@ -220,12 +246,17 @@ public class MoveLocationsMapDisplay extends MapActivity {
 
 		@Override
 		public boolean onTouchEvent(MotionEvent event, MapView mapView) {
+			
 			final int action=event.getAction();
 			final int x=(int)event.getX();
 			final int y=(int)event.getY();
 			boolean result=false;
 
 			if (action==MotionEvent.ACTION_DOWN) {
+				if(sizeOfap != aloharPlaces.size()) { 
+					addOverlay(aloharPlaces);
+					sizeOfap = aloharPlaces.size();
+				}
 				for (OverlayItem item : items) {
 					Point p=new Point(0,0);
 
@@ -297,4 +328,17 @@ public class MoveLocationsMapDisplay extends MapActivity {
 			dragImage.setLayoutParams(lp);
 		}
 	}
+
+	@Override
+	public void handleEvent(ALEvents event, Object data) {
+		if (event == ALEvents.PLACES_QUERY_CALLBACK) {
+			ArrayList<PlaceProfile> places = (ArrayList<PlaceProfile>)data;
+			for( PlaceProfile place : places) {
+				aloharPlaces.add(new OverlayItem(new GeoPoint(place.getLatE6(), place.getLngE6()),
+						place.getName(),place.getAddress()));
+			}
+			addOverlay(aloharPlaces);
+		}
+	}
 }
+
