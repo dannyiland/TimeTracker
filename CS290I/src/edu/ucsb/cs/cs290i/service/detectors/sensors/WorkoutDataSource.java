@@ -1,6 +1,8 @@
 package edu.ucsb.cs.cs290i.service.detectors.sensors;
 
 import java.util.LinkedList;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -52,6 +54,14 @@ public class WorkoutDataSource implements SensorEventListener {
         sensorService = (SensorManager) c.getSystemService(Context.SENSOR_SERVICE);
         sensorService.registerListener(this, sensorService.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
                 SensorManager.SENSOR_DELAY_FASTEST);
+
+        Executors.newScheduledThreadPool(1).scheduleWithFixedDelay(new Runnable() {
+
+            @Override
+            public void run() {
+                logState(state);
+            }
+        }, 0, 1, TimeUnit.MINUTES);
     }
 
 
@@ -78,7 +88,7 @@ public class WorkoutDataSource implements SensorEventListener {
 
         if (state == State.IDLE && average > START_THRESHOLD) {
             state = State.WORKOUT;
-            logEvent();
+            logState(state);
             System.out.println("Idle --> workout");
         } else if (state == State.WORKOUT && average < END_THRESHOLD) {
             state = State.IDLE;
@@ -88,14 +98,14 @@ public class WorkoutDataSource implements SensorEventListener {
     }
 
 
-    private void logEvent() {
+    private void logState(State state) {
         SQLiteDatabase writableDatabase = db.getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put(EventDb.KEY_EVENT_TYPE, WorkoutDetector.class.getName());
+        values.put(EventDb.KEY_EVENT_TYPE, "workout-" + state.toString());
         values.put(EventDb.KEY_TIMESTAMP, System.currentTimeMillis());
         writableDatabase.insert(EventDb.TABLE_NAME, null, values);
-        
-        System.out.println("Logged event");
+
+        System.out.println("Logged workout state");
     }
 
 
