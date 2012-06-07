@@ -83,7 +83,7 @@ public class DetectorService extends Service {
             e.printStackTrace();
         } finally {
             restoringActions = false;
-        } 
+        }
 
     }
 
@@ -140,9 +140,11 @@ public class DetectorService extends Service {
 
     public List<Action> matchActions(long startTime, long endTime) {
         List<Event> events = getEvents(startTime, endTime);
+        System.out.println("Events in range are " + events.toString());
 
         List<Action> activeActions = new ArrayList<Action>();
         for (Action a : actions) {
+            System.out.println("Matching against " + a.getName());
             if (a.matches(events)) {
                 activeActions.add(a);
             }
@@ -180,7 +182,7 @@ public class DetectorService extends Service {
             d.start(this);
         }
         actions.add(a);
-        
+
         if (!restoringActions) {
             saveActions();
         }
