@@ -57,11 +57,15 @@ public class DetectorService extends Service {
         String accountName = settings.getString("accountName", null);
         String authToken = settings.getString("authToken", null);
         if (accountName == null || authToken == null) {
+            Log.w("DetectorService", "Requesting Calendar authorization.");
+
             Intent intent = new Intent();
             intent.setClass(this, AccountChooser.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             this.startActivity(intent);
         } else {
+            System.out.println(accountName);
+            System.out.println(authToken);
             CalendarDataSource.getInstance().setAuthToken(authToken);
         }
 
