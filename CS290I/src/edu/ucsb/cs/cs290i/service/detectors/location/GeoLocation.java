@@ -35,10 +35,10 @@ public class GeoLocation {
 	 */
 	public static GeoLocation fromDegrees(double latitude, double longitude) {
 		GeoLocation result = new GeoLocation();
-		result.radLat = Math.toRadians(latitude);
-		result.radLon = Math.toRadians(longitude);
-		result.degLat = latitude;
-		result.degLon = longitude;
+		result.radLat = Math.toRadians(latitude/1000000);
+		result.radLon = Math.toRadians(longitude/1000000);
+		result.degLat = latitude/1000000;
+		result.degLon = longitude/1000000;
 		result.checkBounds();
 		return result;
 	}
@@ -144,7 +144,7 @@ public class GeoLocation {
 	 * array element.</li>
 	 * </ul>
 	 */
-	public GeoLocation[] boundingCoordinates(double distance, double radius) {
+	public double[] boundingCoordinates(double distance, double radius) {
 
 		if (radius < 0d || distance < 0d)
 			throw new IllegalArgumentException();
@@ -170,9 +170,13 @@ public class GeoLocation {
 			minLon = MIN_LON;
 			maxLon = MAX_LON;
 		}
+		double[] returnVals = new double[4];
+		returnVals[0] = minLat;
+		returnVals[1] = maxLat;
+		returnVals[2] = minLon;
+		returnVals[3] = maxLon;
 
-		return new GeoLocation[]{fromRadians(minLat, minLon),
-				fromRadians(maxLat, maxLon)};
+		return returnVals;
 	}
 
 }
