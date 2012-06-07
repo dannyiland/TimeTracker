@@ -18,23 +18,24 @@
     <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS" />
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.USE_CREDENTIALS" />
-    <uses-permission android:name="android.permission.MANAGE_ACCOUNTS"/>
+    <uses-permission android:name="android.permission.MANAGE_ACCOUNTS" />
 
     <application
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name" >
-      
-      <uses-library android:name="com.google.android.maps" />
-        
-      <activity android:name=".MainTabActivity" android:label="@string/app_name"
-          android:theme="@android:style/Theme.NoTitleBar"
-		android:screenOrientation="portrait">
-        <intent-filter>
-          <action android:name="android.intent.action.MAIN" />
-          <category android:name="android.intent.category.LAUNCHER" />
-        </intent-filter>
-      </activity>
+        <uses-library android:name="com.google.android.maps" />
 
+        <activity
+            android:name=".MainTabActivity"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.NoTitleBar" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".ActionsStatsActivity"
             android:label="Actions Stats" >
@@ -48,6 +49,10 @@
             android:label="Create New Action" >
         </activity>
         <activity
+            android:name=".CreateDetectorActivity"
+            android:label="Add Detector" >
+        </activity>
+        <activity
             android:name=".service.detectors.calendar.CalendarDetector$Config"
             android:label="CalendarDetector Configuration" >
         </activity>
@@ -57,17 +62,18 @@
         </activity>
         <activity
             android:name=".service.detectors.location.MapDisplay"
-            android:label="Actions and Places" >      
-        </activity>        
+            android:label="Actions and Places" >
+        </activity>
         <activity
             android:name=".service.detectors.location.AddLocationActivity"
-            android:label="Create a new Location" >      
-        </activity>        
+            android:label="Create a new Location" >
+        </activity>
         <activity
             android:name=".service.detectors.location.MoveLocationsMapDisplay"
-            android:label="Relocate your Places!" >      
+            android:label="Relocate your Places!" >
         </activity>
-		<service
+
+        <service
             android:name=".service.detectors.location.LocationServiceLogger"
             android:exported="false"
             android:label="Location Logger Service" >

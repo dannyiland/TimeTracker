@@ -32,6 +32,6 @@ public abstract class Detector {
 
 
     public void stop(Context c) {
-    };
+    }
 
 }

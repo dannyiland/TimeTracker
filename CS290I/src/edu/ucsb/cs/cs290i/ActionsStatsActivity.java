@@ -60,6 +60,7 @@ public class ActionsStatsActivity extends Activity {
         					service.matchActions(System.currentTimeMillis() - TEN_MINUTES,
         							System.currentTimeMillis());
         	for (Action a : actions) {
+        	    System.out.println(a.getName());
         		text.append(a.getName());
         		text.append("\n");
         	}

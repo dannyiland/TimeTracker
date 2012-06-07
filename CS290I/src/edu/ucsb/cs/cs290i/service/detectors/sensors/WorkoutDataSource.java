@@ -95,7 +95,6 @@ public class WorkoutDataSource implements SensorEventListener {
         values.put(EventDb.KEY_TIMESTAMP, System.currentTimeMillis());
         writableDatabase.insert(EventDb.TABLE_NAME, null, values);
         
-        writableDatabase.close();
         System.out.println("Logged event");
     }
 

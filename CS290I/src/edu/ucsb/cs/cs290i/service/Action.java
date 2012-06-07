@@ -17,6 +17,7 @@ public class Action implements Externalizable {
 
     private String name;
     private List<Detector> detectors;
+    private String description;
 
 
     public Action() {
@@ -68,11 +69,11 @@ public class Action implements Externalizable {
             @SuppressWarnings("unchecked")
             Class<? extends Detector> c = (Class<? extends Detector>) input.readObject();
             try {
-                Detector detector = (Detector) c.getConstructor(params.getClass()).newInstance((Object) params);
+                Detector detector = (Detector) c.getConstructor(new String[0].getClass()).newInstance((Object) params);
                 System.out.printf("Created detector %s(%s)\n", c.getName(), Arrays.toString(params));
                 detectors.add(detector);
             } catch (Exception e) {
-                Log.e("Action", "Error recreating Detector:");
+                Log.e("Action", "Error recreating Detector: ");
                 e.printStackTrace();
             }
         }
@@ -93,6 +94,16 @@ public class Action implements Externalizable {
     @Override
     public String toString() {
         return getName();
+    }
+
+
+    public String getDescription() {
+        return description;
+    }
+
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
 }

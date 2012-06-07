@@ -42,6 +42,7 @@ public class CalendarDetector extends Detector {
     }
 
     // The configuration UI Activity. Must have a String[] extra called "config" in its result.
+    // Must also be called "Config".
     public static class Config extends Activity {
 
         @Override
@@ -62,5 +63,11 @@ public class CalendarDetector extends Detector {
             });
         }
 
+    }
+
+
+    @Override
+    public String toString() {
+        return "Calendar event about " + getParameters()[0];
     }
 }

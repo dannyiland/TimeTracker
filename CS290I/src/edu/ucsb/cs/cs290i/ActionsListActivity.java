@@ -22,7 +22,6 @@ import android.widget.Toast;
 import edu.ucsb.cs.cs290i.service.Action;
 import edu.ucsb.cs.cs290i.service.DetectorService;
 import edu.ucsb.cs.cs290i.service.DetectorService.DetectorServiceBinder;
-import edu.ucsb.cs.cs290i.service.detectors.calendar.CalendarDetector;
 
 public class ActionsListActivity extends ListActivity {
     private DetectorService service;

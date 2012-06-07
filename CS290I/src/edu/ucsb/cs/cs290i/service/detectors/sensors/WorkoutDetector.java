@@ -28,7 +28,7 @@ public class WorkoutDetector extends Detector {
         List<Event> events = Lists.newArrayList();
 
         System.out.println(Arrays.toString(EventDb.getTimeTypeArgs(startTime, endTime, WorkoutDetector.class)));
-        
+
         Cursor c = db.query(EventDb.TABLE_NAME, null, EventDb.SELECT_TIME_TYPE,
                 EventDb.getTimeTypeArgs(startTime, endTime, WorkoutDetector.class),
                 null, null, null);
@@ -62,4 +62,9 @@ public class WorkoutDetector extends Detector {
         }
     }
 
+
+    @Override
+    public String toString() {
+        return "Working out";
+    }
 }

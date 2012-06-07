@@ -16,7 +16,7 @@ import android.database.sqlite.SQLiteOpenHelper;
  *
  */
 public class LocationDB extends SQLiteOpenHelper {
-    public static final String DATABASE_NAME = "TimeTracker";
+    public static final String DATABASE_NAME = "TimeTrackerLocationDB";
     public static final int DATABASE_VERSION = 1;
 	public static final String LOCATION_TABLE_NAME="locationInstances";
 	public static final String KNOWN_LOCATION_TABLE_NAME="Locations";
