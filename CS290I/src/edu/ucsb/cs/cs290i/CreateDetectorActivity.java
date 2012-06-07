@@ -11,6 +11,9 @@ import android.widget.ListView;
 import android.widget.TextView;
 import edu.ucsb.cs.cs290i.service.detectors.Detector;
 import edu.ucsb.cs.cs290i.service.detectors.calendar.CalendarDetector;
+import edu.ucsb.cs.cs290i.service.detectors.location.PlaceDetector;
+import edu.ucsb.cs.cs290i.service.detectors.sensors.IsPluggedDetector;
+import edu.ucsb.cs.cs290i.service.detectors.sensors.ProximityDetector;
 import edu.ucsb.cs.cs290i.service.detectors.sensors.WorkoutDetector;
 
 public class CreateDetectorActivity extends ListActivity {
@@ -20,12 +23,18 @@ public class CreateDetectorActivity extends ListActivity {
     private static final Class<Detector>[] DETECTORS = new Class[] {
             WorkoutDetector.class,
             CalendarDetector.class,
+            IsPluggedDetector.class,
+            ProximityDetector.class,
+            PlaceDetector.class,
     };
     
     // And their display names.
     private static final String[] NAMES = {
             "Workout Detector",
             "Calendar Event Detector",
+            "Device Plugged In Detector",
+            "Device Proximity Detector",
+            "Places Detector",
     };
 
     private String selectedDetector;
