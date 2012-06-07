@@ -11,6 +11,7 @@ import android.accounts.AccountManagerCallback;
 import android.accounts.AccountManagerFuture;
 import android.accounts.AuthenticatorException;
 import android.accounts.OperationCanceledException;
+import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -31,6 +32,9 @@ import com.google.common.collect.Lists;
  * Sample for Google Calendar API v3. It shows how to authenticate, get calendars, add a new
  * calendar, update it, and delete it.
  * 
+ * http://code.google.com/p/google-api-java-client/source/browse/calendar-android-sample/src/main/
+ * java/com/google/api/services/samples/calendar/android/CalendarSample.java?repo=samples
+ * 
  * <p>
  * To enable logging of HTTP requests/responses, change {@link #LOGGING_LEVEL} to
  * {@link Level#CONFIG} or {@link Level#ALL} and run this command:
@@ -47,7 +51,7 @@ public final class AccountChooser extends ListActivity {
     /** Logging level for HTTP requests/responses. */
     private static final Level LOGGING_LEVEL = Level.ALL;
 
-    private static final String TAG = "CalendarSample";
+    private static final String TAG = "AccountChooser";
 
     private static final String AUTH_TOKEN_TYPE = "cl";
 
@@ -193,7 +197,7 @@ public final class AccountChooser extends ListActivity {
     }
 
 
-    void handleGoogleException(IOException e) {
+    void handleGoogleException(final IOException e) {
         if (e instanceof GoogleJsonResponseException) {
             GoogleJsonResponseException exception = (GoogleJsonResponseException) e;
             if (exception.getStatusCode() == 401 && !received401) {
@@ -204,9 +208,14 @@ public final class AccountChooser extends ListActivity {
                 editor2.remove(PREF_AUTH_TOKEN);
                 editor2.commit();
                 gotAccount();
-                return;
             }
         }
         Log.e(TAG, e.getMessage(), e);
+        runOnUiThread(new Runnable() {
+            public void run() {
+                new AlertDialog.Builder(AccountChooser.this).setTitle("Exception").setMessage(
+                        e.getMessage()).setNeutralButton("ok", null).create().show();
+            }
+        });
     }
 }

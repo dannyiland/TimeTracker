@@ -48,8 +48,8 @@ public class EventDb extends SQLiteOpenHelper {
     }
 
 
-    public static String[] getTimeTypeArgs(long startTime, long endTime, Class<? extends Detector> detector) {
-        return new String[] { Long.toString(startTime), Long.toString(endTime), detector.getName() };
+    public static String[] getTimeTypeArgs(long startTime, long endTime, String type) {
+        return new String[] { Long.toString(startTime), Long.toString(endTime), type };
     }
 
 }

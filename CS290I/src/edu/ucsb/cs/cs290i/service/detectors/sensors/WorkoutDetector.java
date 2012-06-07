@@ -1,6 +1,5 @@
 package edu.ucsb.cs.cs290i.service.detectors.sensors;
 
-import java.util.Arrays;
 import java.util.List;
 
 import android.content.Context;
@@ -27,10 +26,8 @@ public class WorkoutDetector extends Detector {
     public List<Event> getEvents(long startTime, long endTime) {
         List<Event> events = Lists.newArrayList();
 
-        System.out.println(Arrays.toString(EventDb.getTimeTypeArgs(startTime, endTime, WorkoutDetector.class)));
-
         Cursor c = db.query(EventDb.TABLE_NAME, null, EventDb.SELECT_TIME_TYPE,
-                EventDb.getTimeTypeArgs(startTime, endTime, WorkoutDetector.class),
+                EventDb.getTimeTypeArgs(startTime, endTime, "workout-WORKOUT"),
                 null, null, null);
 
         System.out.println("Selected " + c.getCount() + " events");
