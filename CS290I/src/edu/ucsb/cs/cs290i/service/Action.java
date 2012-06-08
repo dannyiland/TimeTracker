@@ -64,6 +64,7 @@ public class Action implements Externalizable {
     @Override
     public void readExternal(ObjectInput input) throws IOException, ClassNotFoundException {
         name = input.readUTF();
+        description = input.readUTF();
         for (int i = input.readInt(); i > 0; i--) {
             String[] params = (String[]) input.readObject();
             @SuppressWarnings("unchecked")
@@ -83,6 +84,7 @@ public class Action implements Externalizable {
     @Override
     public void writeExternal(ObjectOutput output) throws IOException {
         output.writeUTF(name);
+        output.writeUTF(description);
         output.writeInt(detectors.size());
         for (Detector d : detectors) {
             output.writeObject(d.getParameters());
