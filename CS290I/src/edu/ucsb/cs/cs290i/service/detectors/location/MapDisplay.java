@@ -228,17 +228,22 @@ public class MapDisplay extends MapActivity implements ALEventListener{
 			aloharItems = new ArrayList<OverlayItem>();
 			userStays = (ArrayList<UserStay>)data;
 			for (UserStay stay : userStays) {
-//				locs.add(new LocationInstance(stay.getSelectedPlace().getName(),
-//						((double)stay.getCentroidLatE6())/1000000,
-//						((double)stay.getCentroidLngE6())/1000000,
-//						stay.getStartTime(),
-//						stay.getEndTime()));
+				//				locs.add(new LocationInstance(stay.getSelectedPlace().getName(),
+				//						((double)stay.getCentroidLatE6())/1000000,
+				//						((double)stay.getCentroidLngE6())/1000000,
+				//						stay.getStartTime(),
+				//						stay.getEndTime()));
 				aloharItems.add(new OverlayItem(getPoint(((double)stay.getCentroidLatE6())/1000000,
 						((double)stay.getCentroidLngE6())/1000000),
 						stay.getSelectedPlace().getName(),
 						"Visited from " + new Date(stay.getStartTime()*1000).toGMTString() + " to " + new Date(1000*stay.getEndTime()).toGMTString()));
 			}
-		addOverlay(aloharItems);
+			addOverlay(aloharItems);
+		} else {
+			System.out.println("Alohar error! ");
+			if (data != null) {
+				System.out.println(data.toString());
+			}
 		}
 	}
 
@@ -258,7 +263,7 @@ public class MapDisplay extends MapActivity implements ALEventListener{
 		// Add Alohar Stays in time range and all detected LocationInstances from Google.
 
 		ALPlaceManager a = Alohar.getInstance().getPlaceManager();
-		a.searchUserStays(UCSB_lat, UCSB_lon, 50000, startTimeMS/1000, endTimeMS/1000, true, 100, this);
+		a.searchUserStays(UCSB_lat, UCSB_lon, 50000, 0, System.currentTimeMillis()/1000, true, 100, this);
 
 		Drawable marker=this.getResources().getDrawable(R.drawable.marker);
 		if(marker != null) {
@@ -266,27 +271,30 @@ public class MapDisplay extends MapActivity implements ALEventListener{
 					marker.getIntrinsicHeight());
 			ArrayList<OverlayItem> items = new ArrayList<OverlayItem>();
 			ArrayList<Location> locations = LocationDB.getInstance(this).getAllKnownLocations(this.getApplicationContext());
-//			ArrayList<LocationInstance> instances = LocationDB.getInstance(this).getLocationsInRange(this.getApplicationContext(), startTimeMS, endTimeMS);
-//			// Merge locations with already known locations within the default radius.
-//			boolean found = false;
-//			for (LocationInstance inst : instances) {
-//				for( Location loc : locations) {
-//					if (loc.matches(inst)) {
-//						found = true;
-//						break; // We don't need to map this inst, it's already mapped.
-//					}
-//				}
-//
-//				if(!found) {
-//					locations.add(new Location(inst.getNames(), inst.getLatitude(), inst.getLongitude(),DEFAULT_RADIUS_METERS));
-//					items.add(new OverlayItem(getPoint(inst.getLatitude(), inst.getLongitude()), inst.getNames(), "Visited from " + new Date(inst.getStartTime()*1000).toGMTString() + " to " + new Date(inst.getEndTime()*1000).toGMTString()));
-//					found = false;
-//				}
-//			}
+			ArrayList<LocationInstance> instances = LocationDB.getInstance(this).getLocationsInRange(this.getApplicationContext(), startTimeMS, endTimeMS);
+			// Merge locations with already known locations within the default radius.
+			boolean found = false;
+			if(locations != null && locations.size() > 0 && instances != null && instances.size() > 0){
+				for (LocationInstance inst : instances) {
+					for( Location loc : locations) {
+						if (loc.matches(inst)) {
+							found = true;
+							break; // We don't need to map this inst, it's already mapped.
+						}
+					}
 
-//			map.getOverlays().add(new SitesOverlay(marker, items));
-//			me=new MyLocationOverlay(this, map);
-//			map.getOverlays().add(me);
+
+					if(!found) {
+						locations.add(new Location(inst.getNames(), inst.getLatitude(), inst.getLongitude(),DEFAULT_RADIUS_METERS));
+						items.add(new OverlayItem(getPoint(inst.getLatitude(), inst.getLongitude()), inst.getNames(), "Visited from " + new Date(inst.getStartTime()*1000).toGMTString() + " to " + new Date(inst.getEndTime()*1000).toGMTString()));
+						found = false;
+					}
+				}
+			}
+
+			map.getOverlays().add(new SitesOverlay(marker, items));
+			me=new MyLocationOverlay(this, map);
+			map.getOverlays().add(me);
 
 
 		} else {

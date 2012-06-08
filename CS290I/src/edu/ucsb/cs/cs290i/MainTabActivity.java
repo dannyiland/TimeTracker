@@ -88,11 +88,12 @@ public class MainTabActivity extends TabActivity {
     private void startLocationTracking() {
         // Alohar Initialization
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        alohar_uid = prefs.getString(PREF_KEY, "7eb44650e79cbf59d65e6587ccf736fb971cdc78");
+        alohar_uid = prefs.getString(PREF_KEY, "0");
         Alohar.init(getApplication());
         mAlohar = Alohar.getInstance();
+        mAlohar.getProfileManager().resetAccount();
         if (alohar_uid != "0") {
-            mAlohar.authenticate(alohar_uid, APP_ID, API_KEY, alEventListener);
+        	mAlohar.authenticate(alohar_uid, APP_ID, API_KEY, alEventListener);
         } else {
             mAlohar.register(APP_ID, API_KEY, alEventListener);
         }
