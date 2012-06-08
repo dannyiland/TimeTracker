@@ -14,6 +14,7 @@ public class Location {
 		this.latitude = lat;
 		this.longitude = lon;
 		this.radius = radius;
+		this.timestamp = System.currentTimeMillis();
 		if ( type != null ) {
 			types = new String[type.length];
 			for( int i=0; i< type.length;i++) {
@@ -56,7 +57,9 @@ public class Location {
 
 	// Returns true if the location instance is within the bounds, false otherwise.
 		public boolean matches(Location candidate) {
-			if(computeDistanceInMeters(candidate, this) > this.getRadius()) {
+			float distance = computeDistanceInMeters(candidate, this);
+			System.out.println(candidate.getLatitude() + "," + candidate.getLongitude() + " is " + distance + " from location.");
+			if(distance > this.getRadius()) {
 				return false;
 			} else {
 				return true;

@@ -36,6 +36,7 @@ import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.alohar.core.Alohar;
 import com.google.android.maps.OverlayItem;
 
 import edu.ucsb.cs.cs290i.R;
@@ -207,35 +208,35 @@ public class BalloonOverlayView extends FrameLayout implements OnSeekBarChangeLi
 	 * @param balloonBottomOffset - The bottom padding (in pixels) to be applied
 	 * when rendering this view.
 	 */
-	
-private void populateSpinner() {
-	Geocoder geocoder = new Geocoder(this.getContext(), Locale.getDefault());
-	List<Address> addresses = new ArrayList<Address>();
-	List<String> addressStrings = new ArrayList<String>();
-	try {
-		 addresses = geocoder.getFromLocation(((double)overlayItem.getPoint().getLatitudeE6())/1000000, ((double)overlayItem.getPoint().getLongitudeE6())/1000000, 7);
-	} catch (IOException e) {
-		// TODO Auto-generated catch block
-	}
-	for (Address a : addresses) {
-		if(a.getFeatureName() != null) {
-			addressStrings.add(a.getFeatureName());
-		} else {
+
+	private void populateSpinner() {
+		// Google Geocoder
+		Geocoder geocoder = new Geocoder(this.getContext(), Locale.getDefault());
+		List<Address> addresses = new ArrayList<Address>();
+		List<String> addressStrings = new ArrayList<String>();
+		try {
+			addresses = geocoder.getFromLocation(((double)overlayItem.getPoint().getLatitudeE6())/1000000, ((double)overlayItem.getPoint().getLongitudeE6())/1000000, 3);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+		}
+		for (Address a : addresses) {
 			int numLines = a.getMaxAddressLineIndex();
 			if (numLines != -1) {
 				String addString = "";
 				for ( int i=0; i<= numLines;i++) {
-					addString += a.getAddressLine(i);
+					addString += a.getAddressLine(i) + " ";
 				}
 				if( addString != "") {
+					addString = addString.replaceAll("\\\\n", " ");
+
 					addressStrings.add(addString);
 				}
 			}
 		}
+
+		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this.getContext(), android.R.layout.simple_spinner_dropdown_item, addressStrings);
+		name.setAdapter(adapter);
+
 	}
-	ArrayAdapter<String> adapter = new ArrayAdapter<String>(this.getContext(), android.R.layout.simple_spinner_dropdown_item, addressStrings);
-	name.setAdapter(adapter);
-	
-}
 
 }

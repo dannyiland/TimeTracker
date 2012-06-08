@@ -19,6 +19,7 @@ package edu.ucsb.cs.cs290i.service.detectors.location;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -176,11 +177,25 @@ public class MoveLocationsMapDisplay extends MapActivity implements ALEventListe
 			marker.setBounds(0, 0, marker.getIntrinsicWidth(),
 					marker.getIntrinsicHeight());
 			ArrayList<OverlayItem> items = new ArrayList<OverlayItem>();
-			ArrayList<Location> locations = LocationDB.getInstance(this).getKnownLocationsBetween(startTimeMS, endTimeMS, this.getApplicationContext());
+			ArrayList<Location> locations = LocationDB.getInstance(this).getAllKnownLocations(getApplicationContext());
+			ArrayList<Location> display = new ArrayList<Location>();
 			for (Location inst : locations) {
-				items.add(new OverlayItem(getPoint(inst.getLatitude(), inst.getLongitude()), inst.getName(), "Radius: " + inst.getRadius()));
+				boolean found = false;
+				if (locations != null && locations.size() > 0){ 
+					for( Location disp : display) {
+						if (inst.matches(disp)) {
+							found = true;
+							break; // We don't need to map this inst, it's already mapped.
+						}
+					}
+				}
 
+				if(!found) {
+					items.add(new OverlayItem(getPoint(inst.getLatitude(), inst.getLongitude()), inst.getName(), "Saved location" + inst.getType()));
+					display.add(inst);
+				}
 			}
+		
 			map.getOverlays().add(new SitesOverlay(marker, items));
 			me=new MyLocationOverlay(this, map);
 			map.getOverlays().add(me);
@@ -305,7 +320,13 @@ public class MoveLocationsMapDisplay extends MapActivity implements ALEventListe
 					System.out.println("Moved pin" + distance[0] + " meters");
 					System.out.println("Relocated pin to : "+ ((double)pt.getLatitudeE6())/1000000 + " , " + ((double)pt.getLongitudeE6())/1000000);
 					// Update the location's lat/lon in the database!
-					numChanged = numChanged + LocationDB.getInstance(getApplicationContext()).moveLocation("name here", oldLat, oldLon, newLat, newLon);
+					String name;
+					if(inDrag.getTitle() != null) {
+						name = inDrag.getTitle();
+					} else {
+						name = "name";
+					}
+					numChanged = numChanged + LocationDB.getInstance(getApplicationContext()).moveLocation(name, oldLat, oldLon, newLat, newLon);
 				} else {
 					System.out.print("Did not relocate pin! Display info!");
 					Toast.makeText(MoveLocationsMapDisplay.this, inDrag.getSnippet() + " " + inDrag.getTitle(), Toast.LENGTH_SHORT).show();

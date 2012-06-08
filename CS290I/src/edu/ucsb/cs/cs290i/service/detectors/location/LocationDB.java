@@ -61,7 +61,7 @@ public class LocationDB extends SQLiteOpenHelper {
                     KEY_LATITUDE + " INTEGER, " +
                     KEY_LONGITUDE + " INTEGER, " +
                     KEY_NAME + " TEXT, " +
-                    KEY_LOCATION_TYPE + " TEXT " +
+                    KEY_LOCATION_TYPE + " TEXT, " +
                     KEY_RADIUS + " INTEGER);";
     
 	private static final String CACHE_TABLE_NAME = "LAT_LON_BOUNDS";
@@ -231,7 +231,7 @@ public class LocationDB extends SQLiteOpenHelper {
 				double lon = c.getDouble(c.getColumnIndex(LocationDB.KEY_LONGITUDE));
 				long startTime = c.getLong(c.getColumnIndex(LocationDB.KEY_STARTTIME));
 				long endTime = c.getLong(c.getColumnIndex(LocationDB.KEY_ENDTIME));
-				String names = c.getString(c.getColumnIndex(LocationDB.KEY_KNOWN));
+				String names = c.getString(c.getColumnIndex(LocationDB.KEY_NAME));
 				locations.add(new LocationInstance(names, lat, lon, startTime, endTime));
 			}
 			c.moveToNext();

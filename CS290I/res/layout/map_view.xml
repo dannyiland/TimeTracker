@@ -5,7 +5,7 @@
   <com.google.android.maps.MapView android:id="@+id/mapview"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:apiKey="0SpRigLhhBWPTSbb7yoyYkBOaBeTiXlQQQQTuUg"
+    android:apiKey="0CHNXr0hDZOazpNlTlfsBPkCWLc3ZLD5GmXQQuA"
     android:clickable="true"
   />
   <ImageView android:id="@+id/drag"
