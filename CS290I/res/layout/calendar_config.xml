@@ -4,12 +4,25 @@
     android:layout_height="fill_parent"
     android:orientation="vertical" >
 
-    <EditText
-        android:id="@+id/cal_substring"
+    <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:inputType="text"
-        android:text="query" />
+        android:orientation="horizontal" >
+
+        <EditText
+            android:id="@+id/cal_substring"
+            android:layout_width="0dip"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:inputType="text"
+            android:text="query" />
+
+        <ImageButton
+            android:id="@+id/query_vbtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@android:drawable/ic_btn_speak_now" />
+    </LinearLayout>
 
     <Button
         android:id="@+id/create"

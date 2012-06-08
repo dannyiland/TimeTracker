@@ -1,15 +1,18 @@
 package edu.ucsb.cs.cs290i.service.detectors.calendar;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.speech.RecognizerIntent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 
 import com.google.common.collect.Lists;
 
@@ -61,6 +64,41 @@ public class CalendarDetector extends Detector {
                     finish();
                 }
             });
+            
+            ImageButton queryV = (ImageButton) findViewById(R.id.query_vbtn);
+
+            queryV.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    voiceToField(substr, "Calendar Query");
+                }
+            });
+
+        }
+
+
+        protected void voiceToField(EditText field, String prompt) {
+            Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+            intent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, getPackageName());
+            intent.putExtra(RecognizerIntent.EXTRA_PROMPT, prompt);
+            intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_WEB_SEARCH);
+            intent.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 1);
+
+            startActivityForResult(intent, field.getId());
+        }
+
+
+        @Override
+        protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+            if (resultCode != RESULT_OK) {
+                return;
+            }
+
+            if (requestCode != 0) {
+                ArrayList<String> matches = data.getStringArrayListExtra(
+                        RecognizerIntent.EXTRA_RESULTS);
+                ((EditText) findViewById(requestCode)).setText(matches.get(0));
+            }
         }
 
     }
