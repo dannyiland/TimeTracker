@@ -28,7 +28,10 @@ import edu.ucsb.cs.cs290i.service.DetectorService;
 import edu.ucsb.cs.cs290i.service.DetectorService.DetectorServiceBinder;
 
 public class ActionsStatsActivity extends Activity {
-    protected static final long TEN_MINUTES = 1000 * 60 * 10;
+
+    protected static final long DAY = 1000 * 60 * 60 * 24;
+	static final long[] TIME_RANGES = {DAY, DAY * 7, DAY * 28};
+
     private DetectorService service;
     private TextView list;
     private ServiceConnection connection = new ServiceConnection() {
@@ -53,11 +56,11 @@ public class ActionsStatsActivity extends Activity {
 
         public void onItemSelected(AdapterView<?> parent,
             View view, int pos, long id) {
-            Log.e("!!", "Selected");
+           // Log.e("!!", "Selected");
         	StringBuilder text = new StringBuilder();
         	parent.getItemAtPosition(pos).toString();
         	List<Action> actions = 
-        					service.matchActions(System.currentTimeMillis() - TEN_MINUTES,
+        					service.matchActions(System.currentTimeMillis() - TIME_RANGES[pos],
         							System.currentTimeMillis());
         	for (Action a : actions) {
         	    System.out.println(a.getName());
