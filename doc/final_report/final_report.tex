@@ -26,7 +26,7 @@ Ian Whitfield\\
 
 \maketitle
 \begin{abstract}
-LifeScope is a ...
+LifeScope is a 
 % Need one reference to make it compile properly.
 \cite{Lamport:LaTeX}.
 \end{abstract}
@@ -74,6 +74,25 @@ Internally, our application is structured as a pair of always-running Service co
 The second Service contains the Alohar and Google location tracking systems and, as with the first service, allows them to continue running in the background and log events when the user transitions to a new location.
 
 Events from both the Data Sources and location trackers are stored in SQLite databases for simple querying from Detectors and, if desired, custom queries by the user from another SQLite client.
+
+\subsection {User Interface}
+The user interface was designed to follow Android best-practices and features a number of different interaction modes. As is typical for a modern smartphone application, basic interaction with the application is performed with a simple tapping interface. 
+
+A major component of our application is the interactive map view, which shows places the user has visited (and stayed at for a period of at least 5 minutes). The map view supports a richer set of touch interaction modes with dragging to pan the map, pinching to zoom the map and, after selecting a menu option, dragging to adjust the position of existing place markers.
+
+As entering text is often a cumbersome task on smartphones without actual keyboards all text entry fields within the application have been extended with a voice input button, Figure \ref{figure:voice}.
+
+\begin{figure}
+\begin{center}
+\includegraphics[height=2.5in]{voiceinput}
+\includegraphics[height=2.5in]{voiceinput2}
+\caption{
+Creating a new action. All text fields are extended with a voice input button with a microphone icon.
+}
+\label{figure:voice}
+\end{center}
+\end{figure}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
