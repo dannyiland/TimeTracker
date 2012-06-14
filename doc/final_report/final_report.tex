@@ -30,7 +30,7 @@ Ian Whitfield\\
 \maketitle
 \begin{abstract}
 In this paper, we present \LS, an Android app that tracks and identifies daily activity of a handheld device user.
-\LS harnesses input from a variety of sensors to detect what activity is being performed by the user. Detected activities can then summarized on a time and geographic scale chosen by the user.
+\LS harnesses input from a variety of sensors to detect what activity is being performed by the user. Detected activities can then be summarized on a time and geographic scale chosen by the user.
 
 In what follows, we describe the architecture of \LS, and discuss our design choices. Finally, we present an evaluation of \LS in terms of accuracy of the activity detection and battery usage.
 
@@ -43,20 +43,20 @@ In what follows, we describe the architecture of \LS, and discuss our design cho
 \terms{Mobile computing, context-aware, multimodal interaction}
 
 \section{Introduction}
-The modern smartphone provides the possibility to connect to a wide array of sensors, some of them onboard, some other standalone. This ultimately enables sensor-rich computing on the phone, which in turns opens up new possibility of interaction with the user. In particular, through sensor-fusion the smartphone can act as a gateway to monitor the user daily activity.
-These increased monitoring capabilities have unlocked the possibility of ``self knowledge through numbers'', to put it like the recently founded movement Quantified Self~\cite{quantified:self}. This means applying analytics to your daily life to gain knowledge about your life, with the goal of ultimately improve it.
-However, the Quantified Self is not the end of the story, rather, it is the beginning. After detecting activities, and analyzing them, smartphones provide a gateway to perform actions in response to activities. This means closing the loop and have the smartphone to affect our daily activity performing actions (e.g., send emails, texts, ring, etc.) in response to the recognized activities.
+The modern smartphone provides the possibility to connect to a wide array of sensors, some of them onboard, some others standalone. This ultimately enables sensor-rich computing on the phone, which in turns opens up new possibility of interaction with the user. In particular, through sensor-fusion the smartphone can act as a gateway to monitor the user daily activity.
+These increased monitoring capabilities have unlocked the possibility of ``self knowledge through numbers'', to put it like the recently founded movement Quantified Self~\cite{quantified:self}. That means applying analytics to your daily activity to gain knowledge about your life, with the goal of ultimately improve it.
+However, the Quantified Self is only a milestone in the ongoing tendency towards tight integration of computing devices with human beings. After detecting activities and analyzing them, smartphones provide a gateway to perform actions in response to activities. This means closing the loop and have the smartphone to affect our daily life by performing actions (e.g., send emails, texts, ring, etc.) in response to the recognized user activities.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Related Work}
-There has been an increasing interest in the pervasive computing community about "context monitoring" and "context recognition" for mobile devices. Context recognition applications are able to identify a person's activity at a particular point in time~\cite{fahy2004cass}. A recent development of the context recognition is the idea of context monitoring~\cite{lee2012mobicon} which involves execution of complex multi-step operations and correlating the output of different sensors.
+There has been an increasing interest in the pervasive computing community about "context monitoring" and "context recognition" for mobile devices. Context recognition applications are able to identify a person's activity at a particular point in time~\cite{fahy2004cass}. A further development of the context recognition is the idea of context monitoring~\cite{lee2012mobicon} which involves execution of complex multi-step operations and correlating the output of different sensors.
 
-While the research community has mainly focused on defining an middleware to provide context information to application layer in order to centralize and coordinate access to the shared sensors,  such systems are usually experimental and not yet freely available.
-An exception to the rule is The {\tt funf} Open Sensing Framework~\cite{funf}  of MIT Media Lab, freely available and ready to use. Funf provides a common layer abstraction on the device sensors. The management of sensors is centralized and that allows multiple applications to interact with the same sensor without causing conflict or dramatically increase usage.
+While the research community has mainly focused on defining a middleware to provide context information to the application layer in order to centralize and coordinate access to the shared sensors,  such systems are usually experimental and not yet freely available.
+An exception to the rule is The {\tt funf} Open Sensing Framework~\cite{funf}  of MIT Media Labs, freely available and ready to use. {\tt Funf} provides a common layer abstraction on the device sensors. The management of sensors is centralized and allows multiple applications to interact with the same sensor without causing conflicts or dramatically increase usage.
 
-To conclude the review of related work, we discuss {\tt on\{X\}} a recent product developed at Microsoft~\cite{onx}. {\tt on\{X\}} provides a framework to program actions to be executed automatically by a smartphone when conditions on the sensors are met. Example are ``Launch the music app when I am walking'' or ``Launch calendar when I arrive at work''. 
-Microsoft {\tt on\{X\}} can be viewed as the evolution of early apps that would change basic behavior of the phone based on the context, one example being Android Locale~\cite{android:locale}, which mutes the phone depending on location. 
+To conclude the review of related work, we discuss {\tt on\{X\}} a recent product developed at Microsoft~\cite{onx}. {\tt on\{X\}} provides a framework to program actions to be executed automatically by a smartphone when conditions on sensors are met. Example are ``Launch the music app when I am walking'' or ``Launch calendar when I arrive at work''. 
+Microsoft {\tt on\{X\}} can be viewed as the evolution of early apps that would change basic behavior of the phone based on the context, one example being Android Locale~\cite{android:locale}, which mutes the phone depending on its location. 
 
 The development of context-aware applications has just begun. Both {\tt funf} and {\tt on{X}}  have been released in the last months and the natural expectation to have is that a lot more has yet to come in the realm of context aware applications.
 
@@ -67,11 +67,18 @@ The development of context-aware applications has just begun. Both {\tt funf} an
 
 \LS builds on the idea that human activities are usually strongly localized. For this reason, \LS tries to detect activities only when a transition in location is detected, i.e., a user arrives at or leaves a place. While this model does not support activities that span multiple places, we believe that it adequately models the majority of use cases and greatly simplifies the rest of our implementation. 
 
-In general, \LS works as follows:
-\begin{enumerate}
-\item When a transition in location is detected (departure from or arrival at a place) events corresponding to sensor readings start being collected;
-\item events collected since the previous location transition are analyzed to identify actions, and then discarded. 
-\end {enumerate}
+In general, \LS works as follows. When a transition in location is detected (departure from or arrival at a place) events corresponding to sensor readings collected since the previous location transition are analyzed to identify activities. The principle is sketched in Figure~\ref{figure:principle}
+
+\begin{figure}
+\begin{center}
+\includegraphics[width=3in]{logic}
+\caption{
+Between two location transition (arriving home and leaving home) events $e_1, \dots, e_n$ are stored in a database by Data Sources. Various data sources perform the task of polling sensors and storing timestamped reading in a database. When a location transition ``leaving from home'' is detected, the detection engine queries the database to retrieve events stored by the Data Sources during the time interval $[t_1, t_2]$. Events are then matched with rules to detect activities. 
+}
+\label{figure:principle}
+\end{center}
+\end{figure}
+
 
 Therefore, our approach can then be broken down into two main components: identifying places that a user travels to and then, once at a place, identifying the activity performed.
 
@@ -177,7 +184,7 @@ We found that on average (N=5 locations) the error is 13m (standar deviation= 5.
 In this paper we present \LS, an android app that allows users of a handheld device to track and analyze their daily activity. \LS leverages input from a variety of sensors to determine what activity is being currently performed by the user. \LS then provides methods to summarize all of the user's activities on a given timeframe or geographic area.
 We evaluated the accuracy of sensor identification for the geographic location and the battery usage of the app. We found that the battery usage in the case \LS is set up to monitor a reasonable amount of activities is negligible. We also found that the location estimation, a task crucial for \LS, is quite precise.
 
-\subsection{Future Work} As far as the future work is concerned, we recognize that a system like \LS would benefit of many additional features if it were to be released to the general public. 
+\paragraph{Future Work} As far as the future work is concerned, we recognize that a system like \LS would benefit of many additional features if it were to be released to the general public. 
 First, more detectors are needed to be able to describe a richer set of activities.
 Second, a mechanism to guide and correct the detection of activities would be beneficial, for which the user can review or change the detected action. This is especially true if such a mechanism allowed the app to learn from the user feedback.
 Finally, another possible improvement could be the ability to specify actions not only using {\tt ittt} rules, but by recording the sensor inputs while performing an activity to be recognized later, and then try to match such inputs to future sensor readings. Such a "record activity" feature is highly desirable to minimize user interaction, but it is hard to implement, as current research in activity identification still focus on identifying basic actions such as running/biking/driving ~\cite{mccallmacro}
