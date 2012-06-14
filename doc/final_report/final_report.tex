@@ -93,11 +93,18 @@ Events from both the Data Sources and location trackers are stored in SQLite dat
 \begin{center}
 \includegraphics[width=3in]{arch}
 \caption{
-Architecture of the Detector Service, which stores registered Actions and Detectors and allows the DataSources to run in the background collecting data.
+Architecture of the Detector Service, which stores registered Actions and Detectors and allows the Data Sources to run in the background collecting data.
 }
 \label{figure:voice}
 \end{center}
 \end{figure}
+
+\subsection{Detectors Implemented}
+
+talk about the quantized levels that the data sources use
+why we write every minute
+the moving average with two thresholds in the workout detector to eliminate jitter
+
 
 \subsection {User Interface}
 The user interface was designed to follow Android best-practices and features a number of different interaction modes. As is typical for a modern smartphone application, basic interaction with the application is performed with a simple tapping interface. 
@@ -117,6 +124,16 @@ Creating a new action. All text fields are extended with a voice input button wi
 \end{center}
 \end{figure}
 
+\begin{figure}
+\begin{center}
+\includegraphics[height=2.5in]{ranges}
+\includegraphics[height=2.5in]{map1}
+\caption{
+The two main views of the application. TODO(Luca): Caption
+}
+\label{figure:voice}
+\end{center}
+\end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
