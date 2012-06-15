@@ -52,10 +52,11 @@ There has been increased interest in the pervasive computing community around "c
 While the research community has mainly focused on defining a middleware platform to provide context information to the application layer in order to centralize and coordinate access to the shared sensors, such systems are usually experimental and not yet freely available.
 An exception to the rule is The {\tt funf} Open Sensing Framework~\cite{funf}  from the MIT Media Lab. Funf is freely available, open source, and ready to use. {\tt Funf} provides a common layer abstraction on the device sensors. The management of sensors is centralized and allows multiple applications to interact with the same sensor without causing conflicts or dramatically increase usage. Funf is designed to continuously collect data and log it to the device's internal flash memory or an SD card. Its data sources include any of the standard Android sensors (e.g. accelerometer, gyroscope, compass); operating system-level information, such as which applications are currently open; and data from other applications on the phone, including browser bookmarks, user contacts, and recent searches. To protect the user's privacy, sensitive data (such as a recent search string) is passed through a one-way hash function. Funf will automatically download updated configuration files (which sources to collect from, and at what rate) and periodically upload recorded data through the device's internet connection. This makes funf ideal for widespread data collection, where a large pool of devices can be centrally managed by a small team of researchers.
 
-To conclude the review of related work, we discuss {\tt on\{X\}} a recent product developed at Microsoft~\cite{onx}. {\tt on\{X\}} provides a framework to program actions to be executed automatically by a smartphone when conditions on sensors are met. Example are ``Launch the music app when I am walking'' or ``Launch calendar when I arrive at work''. 
-Microsoft {\tt on\{X\}} can be viewed as the evolution of early apps that would change basic behavior of the phone based on the context, one example being Android Locale~\cite{android:locale}, which mutes the phone depending on its location. 
+To conclude the review of related work, we discuss {\tt on\{X\}} a recent product developed at Microsoft~\cite{onx} (exclusively for Android). {\tt on\{X\}} provides a framework to program actions to be executed automatically by a smartphone when conditions on sensors are met. Example are ``Launch the music app when I am walking'' or ``Launch calendar when I arrive at work''. Microsoft {\tt on\{X\}} can be viewed as the evolution of early apps that would change basic behavior of the phone based on the context, one example being Android Locale~\cite{android:locale}, which mutes the phone depending on its location. 
 
-The development of context-aware applications has just begun. Both {\tt funf} and {\tt on{X}}  have been released in the last months and the natural expectation to have is that a lot more has yet to come in the realm of context aware applications.
+These conditions and actions ("recipes") are written by the user in JavaScript. {\tt on\{X\}} contains an embedded JavaScript interpreter and exposes a simplified set of APIs to user scripts. These APIs include location-based sensing, such as requesting the current location, geofencing, determining movement speed; and a large set of operating system-level APIs, including incoming SMS contents (unhashed, unlike {\tt funf}), screen state, call state, battery level, and application installation. Unlike earlier work, {\tt on\{X\}} is also designed to allow the user to define complex behaviors the perform when conditions are met. The JavaScript API allows a recipe to send SMS and Email messages, start applications, also also exposes an HTTP client for communicating with remote servers.
+
+The development of context-aware applications has just begun. The {\tt funf} Open Sensing Framework was released a few months ago, and {\tt on\{X\}} was released less than two weeks before the final draft of this paper. As the adoption of powerful, sensor-laden mobile devices becomes even more widespread, it is likely that we will continue to see rapid progress in the the realm of context aware applications.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -64,13 +65,13 @@ The development of context-aware applications has just begun. Both {\tt funf} an
 
 \LS builds on the idea that human activities are usually strongly localized. For this reason, \LS tries to detect activities only when a transition in location is detected, i.e., a user arrives at or leaves a place. While this model does not support activities that span multiple places, we believe that it adequately models the majority of use cases and greatly simplifies the rest of our implementation. 
 
-In general, \LS works as follows. When a transition in location is detected (departure from or arrival at a place) events corresponding to sensor readings collected since the previous location transition are analyzed to identify activities. The principle is sketched in Figure~\ref{figure:principle}
+At a high level, \LS works as follows. At all times, events generated by sensor readings are collected and stored into a database. When a transition in location is detected (departure from or arrival at a place) events corresponding to sensor readings collected since the previous location transition are recalled from the database and analyzed to perform activity identification. The principle is sketched in Figure~\ref{figure:principle}
 
 \begin{figure}
 \begin{center}
 \includegraphics[width=3in]{logic}
 \caption{
-Between two location transition (arriving home and leaving home) events $e_1, \dots, e_n$ are stored in a database by Data Sources. Various data sources perform the task of polling sensors and storing timestamped reading in a database. When a location transition ``leaving from home'' is detected, the detection engine queries the database to retrieve events stored by the Data Sources during the time interval $[t_1, t_2]$. Events are then matched with rules to detect activities. 
+Between two location transition (arriving home and leaving home) events $e_1, \dots, e_n$ are stored in a database by Data Sources. Various data sources perform the task of polling sensors and storing timestamped reading in a database. When a location transition ``leaving from home'' is detected, the detection engine queries the database to retrieve events stored by the Data Sources during the time interval $[t_1, t_2]$. Events are then fed to different Detectors, each of them matching a particular set of events, usually coming from the same Data Source. Finally, rule are matched as a combination of detectors whose conditions have been satisfied.
 }
 \label{figure:principle}
 \end{center}
@@ -79,14 +80,16 @@ Between two location transition (arriving home and leaving home) events $e_1, \d
 
 Therefore, our approach can then be broken down into two main components: identifying places that a user travels to and then, once at a place, identifying the activity performed.
 
-\subsection {Action Recognition}
-We now describe how activities are detected by \LS. First, the user defines an activity to be matched as a list of conditions that have all to be satisfied on sensors, in the form of {\tt ittt} rules\cite{ittt}, detected by what we call Detectors.
+\subsection {Activity Recognition}
+We now describe how activities are detected by \LS. First, the user defines an activity to be matched as a list of conditions that have all to be satisfied on sensors, in the form of {\tt ifttt} rules~\cite{ifttt}, detected by what we call Detectors.
 
 \paragraph{Detectors}  Detectors are the core component of our activity recognition system, each of which activates in response to a specific, predefined condition. 
-The user groups configured instances of Detectors into actions with descriptive titles such as "working on CS 290". When all the detectors for an action are active when the user is at a location, it is determined that the user was performing that action at that location. The Detectors are backed by Data Sources, which maintain databases of events that may cause a Detector to activate. A Data Source may store its data locally, or may be acting as a proxy for a cloud service API such as Google Calendar. 
+The user groups configured instances of Detectors into activities with descriptive titles such as "working on CS 290". When all the detectors for an activity are active when the user is at a location, it is determined that the user was performing that activity at that location. The Detectors are backed by Data Sources, which maintain databases of events that may cause a Detector to activate. A Data Source may store its data locally, or may be acting as a proxy for a cloud service API such as Google Calendar. 
+A Data Source might serve data to multiple detectors. For example, the accelerometer Data Source stores accelerometer readings that can be queried by all instances of detectors aimed at detecting movement based on accelerometer readings.
 
 \paragraph{Example} A possible activity to be recognized could be described by:
-\begin{quote}{\it If} I'm on campus, my phone is plugged in, and I have an event about 290I on my calendar, {\it then} I must be working with my team on the 290I project.\end{quote}. This means that if in the time interval between two consecutive location transitions (e.g., arriving at a place, then leaving it) a location detector, along with a calendar and a plugged\_in detectors are all triggered, the action ``Working on the 290I project'' is detected.
+\begin{quote}{\it If} I'm on campus, my phone is plugged in, and I have an event about 290I on my calendar, {\it then} I must be working with my team on the 290I project.\end{quote}
+This means that if in the time interval between two consecutive location transitions (e.g., arriving at a place, then leaving it) a location detector, along with a calendar and a plugged\_in detectors are all triggered, the activity ``Working on the 290I project'' is detected.
 
 
 \subsection {Location Management}
@@ -102,7 +105,7 @@ Since we wish to allow arbitrary location-based detectors, we also register a li
 \subsection {Application Architecture}
 Due to its widespread adoption and rich application API (especially for background activity), we decided to implement LifeScope as a user-installable application (``App'') for the Android smartphone operating system.
 
-Internally, our application is structured as a pair of always-running Service components with a number of standalone Activity components that connect to them. The first Service component hosts the currently enabled Detectors and Data Sources. It allows Data Sources to collect data from device sensors and cloud APIs even when the user is not actively using the application. Client Activity components may connect to this Service to register new actions (which contain Detector instances), or determine which of the registered actions has been performed at a given location.
+Internally, our application is structured as a pair of always-running Service components with a number of standalone Activity components that connect to them. The first Service component hosts the currently enabled Detectors and Data Sources. It allows Data Sources to collect data from device sensors and cloud APIs even when the user is not actively using the application. Client Activity components may connect to this Service to register new activities (which contain Detector instances), or determine which of the registered activities has been performed at a given location.
 
 The second Service contains the Alohar and Google location tracking systems and, as with the first service, allows them to continue running in the background and log events when the user transitions to a new location.
 
@@ -112,18 +115,20 @@ Events from both the Data Sources and location trackers are stored in SQLite dat
 \begin{center}
 \includegraphics[width=3in]{arch}
 \caption{
-Architecture of the Detector Service, which stores registered Actions and Detectors and allows the Data Sources to run in the background collecting data.
+Architecture of the Detector Service, which stores registered activities and Detectors and allows the Data Sources to run in the background collecting data.
 }
 \label{figure:voice}
 \end{center}
 \end{figure}
+
+Care was taken to make adding additional Detectors and Data Sources as simple as possible, with the hope that external developers will be able to expand the range of context that can be monitored when determining user activity, by using a straightforward object-oriented design. The only interface between a Detector and the rest of the service is a single method which returns whether or not a Detector became active within a given time range. New Detectors have access to all existing Data Sources and are given access to the application's SQLite databases. New Data Sources can also easily be added to the application to support new Detectors. Internally, the service makes use of Java's reflection capabilities to discover and use new Detectors without requiring developers to modify internal code.
 
 \subsection{Detectors Implemented}
 
 We implemented the following detectors:
 \begin{description}
 \item[Calendar] configured with a string $s$, when queried for timerange $[t_1,t_2]$ tries to find a match of $s$ in the activity of the user's google calendar in that timerange.
-\item[Workout] when queried for timerange $[t_1,t_2]$ computes the moving average of the accelerometer values in int $[t_1,t_2]$ to assess substantial activity which could indicate the user is working out. 
+\item[Workout] when queried for timerange $[t_1,t_2]$ computes the moving average of the accelerometer values in $[t_1,t_2]$ to assess substantial activity which could indicate the user is working out. 
 \item[Proximity / Plugged\_in] when queried for timerange $[t_1,t_2]$ return if the device has been in proximity (resp. plugged in) in the interval $[t_1,t_2]$. The data source for these detectors samples the sensor state every 1 minute.
 \end{description}
 
@@ -142,7 +147,7 @@ As entering text is often a cumbersome task on smartphones without actual keyboa
 \includegraphics[height=2.5in]{voiceinput}
 \includegraphics[height=2.5in]{voiceinput2}
 \caption{
-Creating a new action. All text fields are extended with a voice input button with a microphone icon. Tapping a voice input button records, recognizes, and then populates the corresponding text field with the user's speech. 
+Creating a new activity. All text fields are extended with a voice input button with a microphone icon. Tapping a voice input button records, recognizes, and then populates the corresponding text field with the user's speech. 
 }
 \label{figure:voice}
 \end{center}
@@ -168,25 +173,54 @@ It is certainly hard to evaluate the effectiveness of a system such as \LS witho
 \subsection{Power Consumption}
 An important design consideration for smartphone applications is their impact on battery life. If an application consumes so much power that the device prematurely runs out of power, the user will likely uninstall the application. Mobile context monitoring is an inherently expensive activity, in terms of power usage. The GPS and WiFi radios must remain on for accurate position estimates, and CPU cycles are required for analyzing data samples taken from the device's on-board sensors. For the application to build a complete model of the user's activities, it must remain running in the background and even when the phone is asleep. 
 
-To minimize power draw \LS disables Data Sources that are not currently required by any registered Detectors. For example, if there are no detectors that need readings from the accelerometer sensor, its Data Source will not be activated and no samples will be read from the accelerometer. When the user adds an action containing a Detector that requires information from the accelerometer Data Source, it will be started automatically. Thus, the exact power usage of the application depends on how the user has configured it.
+To minimize power draw \LS disables Data Sources that are not currently required by any registered Detectors. For example, if there are no detectors that need readings from the accelerometer sensor, its Data Source will not be activated and no samples will be read from the accelerometer. When the user adds an activity containing a Detector that requires information from the accelerometer Data Source, it will be started automatically. Thus, the exact power usage of the application depends on how the user has configured it.
 
-To understand how different detectors affect power usage, we performed a series of experiments. In each experiment one Data Source was enabled, and then the phone was left in its sleep state for a fixed period of time. The battery level was measured before and after each experiment to determine the effect of each Data Source on the device's battery life.
+To understand how different detectors affect power usage, we performed a series of experiments. In each experiment one Data Source was enabled, and then the phone was left in its sleep state for a fixed period of time. The battery level was measured before and after each experiment to determine the effect of each Data Source on the device's battery life. These results are summarized in Table~\ref{table:power}.
+
+\begin{table*}
+\begin{center}
+\begin{tabular}{ | l | l | l | l | l | }
+\hline
+Data Source & Initial Battery \% & Final Battery \% & Delta & Test Duration (minutes) \\ \hline \hline
+WorkoutDataSource & 100 & 95 & 5 & 120 \\
+PluggedDataSource & 100 & 96 & 4 & 120 \\
+CalendarDataSourceREF & 100 & 96 & 4 & 120 \\
+(No Data Source enabled) & 100 & 96 & 4 & 120 \\
+(\LS disabled) & 100 & ?? & ?? & 120 \\
+\hline
+\end{tabular}
+\caption{
+Power consumption from different Data Sources. One Data Source was left enabled for a fixed period of time and the initial and final battery levels (as reported by the operating system) were recorded.
+}
+\label{table:power}
+\end{center}
+\end{table*}
+
+As shown in the table, there is only a very slight variation in power consumption between the different Data Sources. The WorkoutDataSource, which samples data from the accelerometer to detect strenuous activity, requires the phone's accelerometer and CPU to be active. The WorkoutDataSource requests a "Partial Wake Lock" from the Android operating system to ensure that these conditions are met.
+
+The PluggedDataSource does not directly access any sensors, and instead requests the device's plugged in state from the operating system every minute. Because the Accelerometer sensor is unused, the operating system does not have to power it. Additionally, the PluggedDataSource is less CPU-intensive than the WorkoutDataSource because its sampling rate is significantly slower (once a minute, instead of \~30 Hz) and the data just has to be stored, not processed first.
+
+The CalendarDataSource does not actively monitor any sensors or device state, and is only active when the user performs an action (in the application's user interface) that causes the Calendar Detector to query it. Because of this, the CalendarDataSource does not consume any additional power in the background and, unsurprisingly, its power consumption is identical to that of the application running with no Data Sources enabled.
+
+We also tested the power consumption with no Data Sources enabled, as the Alohar and Google location sensing components periodically use the phone's GPS, WiFi, and cellular geolocation capabilities while running in the background. There was not a significant decrease in power used when the application was left running without enabled Data Sources, which indicates that the majority of our power consumption is actually a result of continuous location monitoring, and not our Data Sources.
+
+Finally, we measured the normal battery drain on the device with \LS disabled (uninstalled) to provide a baseline.
 
 \subsection{Location Accuracy}
 One fundamental subsystem of \LS is composed by the Alohar and Google location tracking systems. They notify \LS of a location transition, therefore their accuracy in determining the exact location is crucial. We measured the accuracy of \LS for [DANNY, FILL IN] for a set of known locations. We compared the geolocation returned by Alohar when being at one of the known locations to the geolocation available from Google Earth, to assess accuracy. 
-We found that on average (N=5 locations) the error is 13m (standar deviation= 5.4m).
-
+We found that on average (N=5 locations) the error is 13m (standar deviation= 5.4m). This is pretty accurate for our needs [IS IT?]
+[NO IDEA! Hopefully danny wakes up soon and writes a bunch of stuff]
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Conclusions and Future Work}
-In this paper we present \LS, an android app that allows users of a handheld device to track and analyze their daily activity. \LS leverages input from a variety of sensors to determine what activity is being currently performed by the user. \LS then provides methods to summarize all of the user's activities on a given timeframe or geographic area.
+In this paper we present \LS, an Android app that allows users of a handheld device to track and analyze their daily activity. \LS leverages input from a variety of sensors to determine what activity is being currently performed by the user. \LS then provides methods to summarize all of the user's activities on a given timeframe or geographic area.
 We evaluated the accuracy of sensor identification for the geographic location and the battery usage of the app. We found that the battery usage in the case \LS is set up to monitor a reasonable amount of activities is negligible. We also found that the location estimation, a task crucial for \LS, is quite precise.
 
 \paragraph{Future Work} As far as the future work is concerned, we recognize that a system like \LS would benefit of many additional features if it were to be released to the general public. 
 First, more detectors are needed to be able to describe a richer set of activities.
-Second, a mechanism to guide and correct the detection of activities would be beneficial, for which the user can review or change the detected action. This is especially true if such a mechanism allowed the app to learn from the user feedback.
-Finally, another possible improvement could be the ability to specify actions not only using {\tt ittt} rules, but by recording the sensor inputs while performing an activity to be recognized later, and then try to match such inputs to future sensor readings. Such a "record activity" feature is highly desirable to minimize user interaction, but it is hard to implement, as current research in activity identification still focus on identifying basic actions such as running/biking/driving ~\cite{mccallmacro}
+Second, a mechanism to guide and correct the detection of activities would be beneficial, for which the user can review or change the detected activity. This is especially true if such a mechanism allowed the app to learn from the user feedback.
+Finally, another possible improvement could be the ability to specify activities not only using {\tt ifttt} rules, but by recording the sensor inputs while performing an activity to be recognized later, and then try to match such inputs to future sensor readings. Such a "record activity" feature is highly desirable to minimize user interaction, but it is hard to implement, as current research in activity identification still focus on identifying basic actions such as running/biking/driving ~\cite{mccallmacro}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
